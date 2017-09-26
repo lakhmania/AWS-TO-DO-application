@@ -92,7 +92,6 @@
           <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.11" />
         </element>
       </element>
-      <element id="javaee-facet-resources" facet="csye6225-fall2017_main/web/Web Gradle : ROOT.war" />
     </root>
   </artifact>
 </component>
