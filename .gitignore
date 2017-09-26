@@ -16,6 +16,7 @@
 *.ipr
 /out/
 .idea/
+.idea/**/*
 build/**/*
 .gradle/**/*
 
