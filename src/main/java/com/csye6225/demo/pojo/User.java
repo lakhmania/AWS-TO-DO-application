@@ -9,6 +9,8 @@ import java.util.Set;
 @Entity
 public class User implements Persistable {
 
+    public User(){}
+
     public User(String userName, String password) {
         this.userName = userName;
         this.password = password;
