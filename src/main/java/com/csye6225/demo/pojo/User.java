@@ -1,6 +1,4 @@
 package com.csye6225.demo.pojo;
-
-
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -8,19 +6,18 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Entity
 public class User implements Persistable {
 
-    public User(String userName,String password){
-        this.userName=userName;
-        this.password=password;
-        userSessions= new HashSet<UserSession>() ;
+    public User(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+        userSessions = new HashSet<UserSession>();
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long userId;
 
     @Column
     private String userName;
@@ -28,7 +25,7 @@ public class User implements Persistable {
     @Column
     private String password;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserSession> userSessions;
 
     public String getUserName() {
@@ -48,10 +45,6 @@ public class User implements Persistable {
         this.password = password;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public Set<UserSession> getUserSessions() {
         return userSessions;
     }
@@ -60,9 +53,17 @@ public class User implements Persistable {
         this.userSessions = userSessions;
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
     @Override
     public Serializable getId() {
-        return id;
+        return userId;
     }
 
     @Override

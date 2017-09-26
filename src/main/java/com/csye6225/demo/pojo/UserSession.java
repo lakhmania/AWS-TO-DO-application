@@ -1,15 +1,17 @@
 package com.csye6225.demo.pojo;
-
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
-public class UserSession implements Persistable {
+@Entity
+public class UserSession implements Persistable{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int userSessionId;
+
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="userId")
     private User user;
 
     @Column
@@ -40,4 +42,5 @@ public class UserSession implements Persistable {
     public boolean isNew() {
         return false;
     }
+
 }
