@@ -67,7 +67,7 @@ public class HomeController {
        String userName = userSessionRepo.findUserNameBySessionId(browserSession);
        if(userName != null)
        {
-         jsonObject.addProperty("userName", "Welcome"+userName);
+         jsonObject.addProperty("userName", "Welcome "+ userName);
        }
        else
        {

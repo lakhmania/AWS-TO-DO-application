@@ -66,5 +66,5 @@ dependencies {
 }
 
 war {
-    archiveName = 'ROOT2.war'
+    archiveName = 'ROOT.war'
 }
