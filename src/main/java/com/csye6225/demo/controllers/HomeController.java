@@ -40,14 +40,6 @@ public class HomeController {
   public String welcome() {
 
     JsonObject jsonObject = new JsonObject();
-
-//    if (SecurityContextHolder.getContext().getAuthentication() != null
-//        && SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
-//      jsonObject.addProperty("message", "you are not logged in!!!");
-//    } else {
-//      jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
-//    }
-
     jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
 
     return jsonObject.toString();
