@@ -3,19 +3,10 @@ jdk:
   - oraclejdk8
 
 env:
-  - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
+  - MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=root
 
 services:
   - mysql
-
-test:
-   adapter: mysql2
-   database: csye6225
-   username: root
-   encoding: utf8
-
-before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS csye6225;'
 
 sudo: false
 install: true
