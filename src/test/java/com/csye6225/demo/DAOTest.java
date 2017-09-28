@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
+@DataJpaTest
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class DAOTest {
 
