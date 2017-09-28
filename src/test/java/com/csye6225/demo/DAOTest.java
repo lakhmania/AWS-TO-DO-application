@@ -25,7 +25,6 @@ public class DAOTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Ignore
     @Test
     public void testFindUserByName() throws Exception
     {
