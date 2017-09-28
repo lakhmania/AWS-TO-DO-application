@@ -27,7 +27,6 @@ public class DAOTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Ignore
     @Test
     public void testFindUserByName() throws Exception
     {
@@ -36,6 +35,7 @@ public class DAOTest {
         assertNull(user);
     }
 
+    @Ignore
     @Test
     public void testNormal() throws Exception
     {
