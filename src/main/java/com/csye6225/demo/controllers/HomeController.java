@@ -4,21 +4,22 @@ package com.csye6225.demo.controllers;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserSession;
 import com.csye6225.demo.repo.UserRepository;
+import  com.csye6225.demo.repo.UserSessionRepository;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Date;
@@ -31,26 +32,48 @@ public class HomeController {
   @Autowired
   private UserRepository userRepo;
 
+  @Autowired
+  private UserSessionRepository userSessionRepo;
+
 
   @Autowired
   private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
+//  @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
+//  @ResponseBody
+//  public String welcome() {
+//
+//    JsonObject jsonObject = new JsonObject();
+//
+////    if (SecurityContextHolder.getContext().getAuthentication() != null
+////        && SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
+////      jsonObject.addProperty("message", "you are not logged in!!!");
+////    } else {
+////      jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
+////    }
+//
+//    jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
+//
+//    return jsonObject.toString();
+//  }
+
+  @RequestMapping(value ="/", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
-  public String welcome() {
-
+  public String welcome(HttpServletRequest request)
+  {
     JsonObject jsonObject = new JsonObject();
+    String browserSession = request.getRequestedSessionId();
 
-//    if (SecurityContextHolder.getContext().getAuthentication() != null
-//        && SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
-//      jsonObject.addProperty("message", "you are not logged in!!!");
-//    } else {
-//      jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
-//    }
-
-    jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
-
-    return jsonObject.toString();
+       String userName = userSessionRepo.findUserNameBySessionId(browserSession);
+       if(userName != null)
+       {
+         jsonObject.addProperty("userName", "Welcome "+ userName);
+       }
+       else
+       {
+         jsonObject.addProperty("message", "You are not logged in!!!!!!!");;
+       }
+       return jsonObject.toString();
   }
 
   @RequestMapping(value = "/register", method = RequestMethod.GET, produces = "application/json")
@@ -59,6 +82,7 @@ public class HomeController {
     JsonObject json = new JsonObject();
 
     String auth = request.getHeader("Authorization");
+    System.out.println(auth);
     HttpSession session = request.getSession();
     if (auth != null && auth.startsWith("Basic")) {
       String base64Credentials = auth.substring("Basic".length()).trim();
