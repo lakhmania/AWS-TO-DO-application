@@ -36,4 +36,10 @@ public class DAOTest {
         assertNull(user);
     }
 
+    @Test
+    public void testNormal() throws Exception
+    {
+        assertNull(null);
+    }
+
 }
