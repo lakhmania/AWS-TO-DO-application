@@ -19,8 +19,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertNull;
 
-@RunWith(SpringRunner.class)
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class DAOTest {
 
 
