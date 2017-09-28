@@ -15,7 +15,7 @@ test:
    encoding: utf8
 
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS csye6225;'
 
 sudo: false
 install: true
