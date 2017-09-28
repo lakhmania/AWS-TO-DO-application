@@ -5,6 +5,7 @@ import com.csye6225.demo.repo.UserRepository;
 
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,7 +28,7 @@ public class DAOTest {
     @Autowired
     private UserRepository userRepository;
 
-
+    @Ignore
     @Test
     public void testFindUserByName() throws Exception
     {
