@@ -3,11 +3,7 @@ package com.csye6225.demo;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repo.UserRepository;
 
-
-<<<<<<< HEAD
 import org.junit.Before;
-=======
->>>>>>> 68a77a061700b215af0382fee1169e68802b1a72
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
