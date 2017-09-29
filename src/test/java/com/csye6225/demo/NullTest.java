@@ -7,13 +7,16 @@
 
 package com.csye6225.demo;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.junit.Test;
 
-@SpringBootApplication
-public class DemoApplication {
+import static org.junit.Assert.assertNull;
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
+public class NullTest {
+
+    @Test
+    public void testNull() throws Exception
+    {
+
+        assertNull(null);
+    }
 }
