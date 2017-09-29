@@ -19,24 +19,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertNull;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class DAOTest {
 
 
     @Autowired
     private UserRepository userRepository;
-
-    @Test
-    public void testFindUserByName() throws Exception
-    {
-        User user =this.userRepository.findByUserName("neha1@gmail.com");
-        System.out.print(user);
-        assertNull(user);
-    }
-
-    @Ignore
+    
     @Test
     public void testNormal() throws Exception
     {
