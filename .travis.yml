@@ -16,3 +16,6 @@ notifications:
     - merchant.n@husky.neu.edu
     - lalwani.n@husky.neu.edu
     - lakhmani.a@husky.neu.edu
+
+    on_success: always
+    on_failure: always 
