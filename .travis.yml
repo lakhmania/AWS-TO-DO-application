@@ -2,6 +2,12 @@ language: java
 jdk:
   - oraclejdk8
 
+env:
+  - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
+
+services:
+  - mysql
+
 sudo: false
 install: true
 
