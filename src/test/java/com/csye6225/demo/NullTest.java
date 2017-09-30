@@ -16,7 +16,6 @@ public class NullTest {
     @Test
     public void testNull() throws Exception
     {
-
         assertNull(null);
     }
 }
