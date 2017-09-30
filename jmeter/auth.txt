@@ -1,2 +1,0 @@
-# JMeter generated Authorization file
-http://localhost:8080/register	${__RandomString(${__Random(3,9,)},abcdefghijklmnopqrstuvwxyz,)}@${__RandomString(${__Random(2,3,)},abcdefghijklmnopqrstuvwxyz,)}.${__RandomString(${__Random(2,3,)},abcdefghijklmnopqrstuvwxyz,)}	${__Random(5,abcdefghijklmnopqrstuvwxyz,)}			BASIC_DIGEST
