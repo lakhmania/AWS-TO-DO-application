@@ -1,3 +1,10 @@
+/**
+ * <Neha Lalwani>, <001268916>, <lalwani.n@husky.neu.edu>
+ * <Nirali Merchant>, <001268909>, <merchant.n@husky.neu.edu>
+ * <Chintan Koticha>, <001267049>, <koticha.c@husky.neu.edu>
+ * <Apoorva Lakhmani>, <001256312>, <lakhmani.a@husky.neu.edu>
+ */
+
 package com.csye6225.demo.controllers;
 
 
@@ -39,24 +46,6 @@ public class HomeController {
   @Autowired
   private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-//  @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-//  @ResponseBody
-//  public String welcome() {
-//
-//    JsonObject jsonObject = new JsonObject();
-//
-////    if (SecurityContextHolder.getContext().getAuthentication() != null
-////        && SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
-////      jsonObject.addProperty("message", "you are not logged in!!!");
-////    } else {
-////      jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
-////    }
-//
-//    jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
-//
-//    return jsonObject.toString();
-//  }
-
   @RequestMapping(value ="/", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
   public String welcome(HttpServletRequest request)
@@ -76,7 +65,7 @@ public class HomeController {
        return jsonObject.toString();
   }
 
-  @RequestMapping(value = "/register", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = "/user/register", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
   public String save(HttpServletRequest request) {
     JsonObject json = new JsonObject();
