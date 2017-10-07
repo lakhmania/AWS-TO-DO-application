@@ -1,0 +1,100 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation Template for CSYE 6225 - Fall 2017",
+    "Parameters":{
+	"ImageId":{
+		"Type":"String"
+        },
+	"InstanceType":{
+		"Type":"String"
+	},
+	"KeyName":{
+		"Type":"String"
+	},
+	"SubnetId":{
+		"Type":"String"
+	},
+	"GroupName":{
+		"Type":"String"
+	},
+	"HostedZoneId":{
+		"Type":"String"
+	},
+	"Name":{
+		"Type":"String"
+	},
+	"VpcId":{
+		"Type":"String"	
+	}	
+    },
+    "Resources": {
+        "EC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+		"ImageId" :{"Ref":"ImageId"},
+                "InstanceType":{"Ref":"InstanceType"},
+                "SecurityGroupIds": [
+                    {
+                        "Fn::GetAtt": [
+                            "WebServerSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ],
+                "KeyName":{"Ref":"KeyName"},
+                "SubnetId":{"Ref":"SubnetId"},
+		"BlockDeviceMappings" : [
+          	   {
+            		"DeviceName" : "/dev/sdf",
+            		"Ebs" : { "VolumeSize" : "16", "VolumeType" : "gp2" } 
+          	   }
+        	]
+            }
+        },
+        "WebServerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+		"GroupName" :{"Ref":"GroupName"},
+                "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
+                "VpcId": {"Ref":"VpcId"},
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+		    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+	"ResourceRecords" : {
+	    "Type" : "AWS::Route53::RecordSet",	
+  	    "Properties" : {
+		"HostedZoneId" : {"Ref":"HostedZoneId"},
+		"Name" : {"Ref":"Name"},
+		"ResourceRecords" : [ 
+			{
+			   "Fn::GetAtt": [
+                            "EC2Instance",
+                            "PublicIp"
+                          ]
+			}
+		 ],
+		"TTL" : "60",
+		"Type" : "A"
+  	     }
+	}
+    }
+}
