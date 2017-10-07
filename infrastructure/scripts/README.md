@@ -9,10 +9,12 @@
 
 # LAUNCH EC2 INSTANCE
 * Open Terminal and Go to source folder.
+* Go To .~/Infrastructure/scripts
 * Run the following command ./launch-ec2-instance.sh
 
 # TERMINATE EC2 INSTANCE
 * Open Terminal and Go to source folder.
+* Go To .~/Infrastructure/scripts
 * Run the following command ./terminate-ec2-instance.sh
 
 
