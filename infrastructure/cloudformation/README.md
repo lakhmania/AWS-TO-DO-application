@@ -9,11 +9,13 @@
 
 # STACK CREATION
 * Open Terminal and Go to source folder.
+* Go To .~/Infrastructure/cloudformation
 * Run the following command ./create-csye6225-cloudformation-stack.sh stack_name
 * *where stack_name is the name of the stack to be created.
 
 # STACK DELETION
 * Open Terminal and Go to source folder.
+* Go To .~/Infrastructure/cloudformation
 * Run the following command ./delete-csye6225-cloudformation-stack.sh stack_name
 * *where stack_name is the name of the stack to be deleted.
 
