@@ -37,6 +37,11 @@ aws ec2 wait --region us-east-1 instance-running --instance-ids $INSTANCE_ID
 export IP_ADDRESS=$(aws ec2 describe-instances --filters "Name=instance-id,Values=$INSTANCE_ID" --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
 echo $IP_ADDRESS
 
+export z_id=$(aws route53 list-hosted-zones --query 'HostedZones[0].Id' --output text)
+z_id=${z_id#*e/}
+
+export NAME=ec2.$(aws route53 list-hosted-zones --query "HostedZones[0].Name" --output text)
+
 #create record set
-aws route53 change-resource-record-sets --hosted-zone-id $1 --change-batch "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$2\",\"Type\":\"A\",\"TTL\":60,\"ResourceRecords\":[{\"Value\":\"$IP_ADDRESS\"}]}}]}"
+aws route53 change-resource-record-sets --hosted-zone-id $z_id --change-batch "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$NAME\",\"Type\":\"A\",\"TTL\":60,\"ResourceRecords\":[{\"Value\":\"$IP_ADDRESS\"}]}}]}"
 
