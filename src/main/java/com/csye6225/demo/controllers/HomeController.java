@@ -11,7 +11,7 @@ package com.csye6225.demo.controllers;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserSession;
 import com.csye6225.demo.repo.UserRepository;
-import  com.csye6225.demo.repo.UserSessionRepository;
+import com.csye6225.demo.repo.UserSessionRepository;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
