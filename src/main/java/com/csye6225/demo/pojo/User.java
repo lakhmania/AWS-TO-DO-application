@@ -46,7 +46,6 @@ public class User implements Persistable {
         this.userName = userName;
     }
 
-
     public String getPassword() {
         return password;
     }

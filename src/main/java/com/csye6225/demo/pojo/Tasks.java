@@ -25,7 +25,7 @@ public class Tasks implements Persistable {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "tasks", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private Set<TaskAttachments> taskAttachments;
 
 

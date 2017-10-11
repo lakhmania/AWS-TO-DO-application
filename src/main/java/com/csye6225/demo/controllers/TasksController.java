@@ -19,18 +19,17 @@ public class TasksController {
     @Autowired
     private TasksRepository taskRepo;
 
-    @RequestMapping(value ="/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public ResponseEntity updateTasks(@PathParam("id") String id, String description){
+    public ResponseEntity<String> updateTasks(@PathParam("id") String id, String description) {
 
         JsonObject jsonObject = new JsonObject();
 
         Tasks task = taskRepo.findByTaskId(id);
-        if(description.length() > 4096){
-            return new ResponseEntity("Description length exceded the defined length",HttpStatus.BAD_REQUEST);
+        if (description.length() > 4096) {
+            return new ResponseEntity("Description length exceded the defined length", HttpStatus.BAD_REQUEST);
         }
 
-        task.setDescription(description);
         return null;
     }
 }
