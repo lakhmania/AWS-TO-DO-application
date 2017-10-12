@@ -8,13 +8,22 @@
 package com.csye6225.demo.repo;
 
 
+
+
 import com.csye6225.demo.pojo.Tasks;
+import com.csye6225.demo.pojo.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface TasksRepository extends CrudRepository<Tasks, String> {
+import java.util.List;
 
-    Tasks findByTaskId(String id);
+@Repository
+public interface TasksRepository extends CrudRepository<Tasks,Long> {
+
+     Tasks findByTaskId(String id);
+    Tasks findTasksByTaskId(String taskId);
+
+    List<Tasks> findTasksByUser(User user);
+
 
 }
