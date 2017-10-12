@@ -26,6 +26,7 @@
 		"VpcId": {
 			"Type": "String"
 		},
+
 		"AllocatedStorage": {
 			"Type": "String"
 		},
@@ -63,6 +64,7 @@
 			"Type": "String"
 		},
 		"S3BucketName": {
+
 			"Type": "String"
 		}
 	},
@@ -238,5 +240,4 @@
 			}
 		}
 	}
-
 }
