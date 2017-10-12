@@ -25,8 +25,12 @@ public class Tasks implements Persistable {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "tasks", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private Set<TaskAttachments> taskAttachments;
+
+    @ManyToOne
+    @JoinColumn(name="userId")
+    private User user;
 
 
     public String getTaskId() {
@@ -51,6 +55,14 @@ public class Tasks implements Persistable {
 
     public void setTaskAttachments(Set<TaskAttachments> taskAttachments) {
         this.taskAttachments = taskAttachments;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

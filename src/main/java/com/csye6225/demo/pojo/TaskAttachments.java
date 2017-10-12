@@ -8,8 +8,9 @@ import java.io.Serializable;
 @Entity
 public class TaskAttachments implements Persistable {
 
-    public TaskAttachments(String taskName){
-        this.taskName = taskName;
+    public TaskAttachments(){}
+    public TaskAttachments(String fileName){
+        this.fileName = fileName;
     }
 
     @Id
@@ -17,7 +18,7 @@ public class TaskAttachments implements Persistable {
     int taskAttachmentId;
 
     @Column
-    private String taskName;
+    private String fileName;
 
     @ManyToOne
     @JoinColumn(name="taskId")
@@ -31,12 +32,12 @@ public class TaskAttachments implements Persistable {
         this.taskAttachmentId = taskAttachmentId;
     }
 
-    public String getTaskName() {
-        return taskName;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public Tasks getTask() {

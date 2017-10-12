@@ -11,6 +11,7 @@ import org.springframework.data.domain.Persistable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,6 +38,9 @@ public class User implements Persistable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserSession> userSessions;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Tasks> tasks;
 
     public String getUserName() {
         return userName;
@@ -69,6 +73,14 @@ public class User implements Persistable {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public List<Tasks> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Tasks> tasks) {
+        this.tasks = tasks;
     }
 
     @Override
