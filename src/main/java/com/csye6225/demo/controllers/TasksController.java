@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import javax.websocket.server.PathParam;
-
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
@@ -25,8 +22,6 @@ public class TasksController {
 
     @Autowired
     private TasksRepository taskRepo;
-
-
 
     @RequestMapping( method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -51,6 +46,35 @@ public class TasksController {
 
     }
 
+    @RequestMapping(value = "/tasks/{id}", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<String> deleteTask(@PathParam("id") String id) {
+
+        JsonObject jsonObject = new JsonObject();
+
+        Tasks task = taskRepo.findByTaskId(id);
+        if (task==null) {
+            return new ResponseEntity("Task Id not found", HttpStatus.BAD_REQUEST);
+        }
+        else{
+            try{
+
+                taskRepo.deleteByTaskId(id);
+                return new ResponseEntity("No Content", HttpStatus.NO_CONTENT);
+
+            }
+            catch(Exception e){
+
+                return new ResponseEntity("Couldnot delete task", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        }
+
+    }
+
+
+
+/*
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathParam("id") String id, String description) {
@@ -64,5 +88,5 @@ public class TasksController {
 
 
         return null;
-    }
+    }*/
 }
