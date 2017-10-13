@@ -53,6 +53,7 @@ public class TasksController {
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
 
+     JsonObject json = new JsonObject();
         Tasks task = taskRepo.findByTaskId(id);
 
         User taskUser = task.getUser();
@@ -67,17 +68,19 @@ public class TasksController {
             final String[] values = credentials.split(":", 2);
 
             if(!values[0].equals(taskUser.getUserName())){
-                 return new ResponseEntity(HttpStatus.FORBIDDEN);
+                json.addProperty("message","Not an authorized user");
+                 return new ResponseEntity(json.toString(),HttpStatus.FORBIDDEN);
             }
         }
 
         if (description.length() > 4096) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            json.addProperty("message","description more than 4096 characters");
+            return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
         }
 
         taskRepo.updateTaskDescription(description,task.getTaskId());
-
-        return new ResponseEntity(HttpStatus.OK);
+        json.addProperty("message","description updated");
+        return new ResponseEntity(json.toString(),HttpStatus.OK);
 }
 
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = "application/json")
