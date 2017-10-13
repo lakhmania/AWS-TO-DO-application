@@ -49,22 +49,42 @@ public class TasksController {
     @Autowired
     private TasksRepository taskRepo;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> updateTasks(@PathParam("id") String id, String description) {
+    public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
 
-        JsonObject jsonObject = new JsonObject();
-
+     JsonObject json = new JsonObject();
         Tasks task = taskRepo.findByTaskId(id);
-        if (description.length() > 4096) {
-            return new ResponseEntity("Description length exceded the defined length", HttpStatus.BAD_REQUEST);
+
+        User taskUser = task.getUser();
+
+        String auth = request.getHeader("Authorization");
+
+        if (auth != null && auth.startsWith("Basic")) {
+            String base64Credentials = auth.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                 Charset.forName("UTF-8"));
+
+            final String[] values = credentials.split(":", 2);
+
+            if(!values[0].equals(taskUser.getUserName())){
+                json.addProperty("message","Not an authorized user");
+                 return new ResponseEntity(json.toString(),HttpStatus.FORBIDDEN);
+            }
         }
 
-        return null;
-    }
+        if (description.length() > 4096) {
+            json.addProperty("message","description more than 4096 characters");
+            return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+        }
+
+        taskRepo.updateTaskDescription(description,task.getTaskId());
+        json.addProperty("message","description updated");
+        return new ResponseEntity(json.toString(),HttpStatus.OK);
+}
+  
+
 
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
