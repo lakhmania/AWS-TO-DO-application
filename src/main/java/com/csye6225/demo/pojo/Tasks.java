@@ -22,7 +22,7 @@ public class Tasks implements Persistable {
     @Id
     private String taskId;
 
-    @Column
+    @Column(length = 5000)
     private String description;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
