@@ -1,7 +1,6 @@
 package com.csye6225.demo.controllers;
 
 
-
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.websocket.server.PathParam;
+
 import com.csye6225.demo.pojo.TaskAttachments;
 import com.csye6225.demo.pojo.Tasks;
 import com.csye6225.demo.pojo.User;
@@ -49,7 +50,7 @@ public class TasksController {
     private TasksRepository taskRepo;
 
 
- @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
 
@@ -82,9 +83,12 @@ public class TasksController {
         json.addProperty("message","description updated");
         return new ResponseEntity(json.toString(),HttpStatus.OK);
 }
+  
+
 
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody String getTasks(HttpServletRequest request) {
+    public @ResponseBody
+    String getTasks(HttpServletRequest request) {
 
         //Take user object from Basic Authentication
         String auth = request.getHeader("Authorization");
@@ -99,7 +103,7 @@ public class TasksController {
             System.out.println("User is ::::: " + values[0]);
             System.out.println(" Password is ::::: " + values[1]);
 
-            User user  = userRepo.findByUserName(values[0]);
+            User user = userRepo.findByUserName(values[0]);
 
             tasks = taskRepo.findTasksByUser(user);
         }
@@ -107,15 +111,13 @@ public class TasksController {
         JSONArray jsonArray = new JSONArray();
 
 
-        for(Tasks task : tasks)
-        {
+        for (Tasks task : tasks) {
             JSONObject json = new JSONObject();
 
             json.put("id", task.getId());
             json.put("url", task.getDescription());
             JSONArray attachmentArr = new JSONArray();
-            for(TaskAttachments attachments: task.getTaskAttachments())
-            {
+            for (TaskAttachments attachments : task.getTaskAttachments()) {
 
                 JSONObject attachmentObj = new JSONObject();
                 attachmentObj.put("id", attachments.getId().toString());
@@ -132,18 +134,39 @@ public class TasksController {
 
     @RequestMapping(value = "/tasks/{id}/attachments", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    String getAttachments(@PathVariable(value = "id") String taskId) {
+    ResponseEntity<String> getAttachments(@PathVariable(value = "id") String taskId, HttpServletRequest request) {
 
         Tasks task = taskRepo.findTasksByTaskId(taskId);
-        List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
-        JSONArray jsonArray = new JSONArray();
-        for (TaskAttachments attachment : attachments) {
-            JSONObject json = new JSONObject();
-            json.put("id", attachment.getId().toString());
-            json.put("url", attachment.getFileName());
-            jsonArray.add(json);
-        }
-        return jsonArray.toString();
 
-}
+        String auth = request.getHeader("Authorization");
+
+        String[] values = null;
+        String username = null;
+        JSONArray jsonArray = null;
+        if (auth != null && auth.startsWith("Basic")) {
+            String base64Credentials = auth.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                    Charset.forName("UTF-8"));
+
+            values = credentials.split(":", 2);
+            username = values[0];
+        }
+
+        if (username.equals(task.getUser().getUserName())) {
+            List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
+            jsonArray = new JSONArray();
+            for (TaskAttachments attachment : attachments) {
+                JSONObject json = new JSONObject();
+                json.put("id", attachment.getId().toString());
+                json.put("url", attachment.getFileName());
+                jsonArray.add(json);
+            }
+            return  new ResponseEntity<>(jsonArray.toString(), HttpStatus.ACCEPTED);
+        }
+        else
+        {
+            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+    }
 }
