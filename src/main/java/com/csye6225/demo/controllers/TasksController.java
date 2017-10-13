@@ -1,18 +1,26 @@
 package com.csye6225.demo.controllers;
 
+
+
+import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import javax.websocket.server.PathParam;
 import com.csye6225.demo.pojo.TaskAttachments;
 import com.csye6225.demo.pojo.Tasks;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserSession;
 import com.csye6225.demo.repo.TaskAttachmentRepository;
 import com.csye6225.demo.repo.TasksRepository;
-
 import com.csye6225.demo.repo.UserRepository;
 import org.json.simple.*;
-
 import com.google.gson.reflect.TypeToken;
 import javafx.concurrent.Task;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -31,7 +39,9 @@ import java.util.List;
 @Controller
 public class TasksController {
 
-    @Autowired
+ 
+
+   
     private UserRepository userRepo;
     @Autowired
     private TaskAttachmentRepository taskAttachmentRepo;
@@ -41,6 +51,20 @@ public class TasksController {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+ @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<String> updateTasks(@PathParam("id") String id, String description) {
+
+        JsonObject jsonObject = new JsonObject();
+
+        Tasks task = taskRepo.findByTaskId(id);
+        if (description.length() > 4096) {
+            return new ResponseEntity("Description length exceded the defined length", HttpStatus.BAD_REQUEST);
+        }
+
+        return null;
+}
 
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody String getTasks(HttpServletRequest request) {
@@ -103,5 +127,6 @@ public class TasksController {
             jsonArray.add(json);
         }
         return jsonArray.toString();
-    }
+
+}
 }

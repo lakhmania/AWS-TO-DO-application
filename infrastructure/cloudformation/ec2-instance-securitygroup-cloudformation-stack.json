@@ -1,100 +1,165 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "CloudFormation Template for CSYE 6225 - Fall 2017",
-    "Parameters":{
-	"ImageId":{
-		"Type":"String"
-        },
-	"InstanceType":{
-		"Type":"String"
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "CloudFormation Template for CSYE 6225 - Fall 2017",
+	"Parameters": {
+		"ImageId": {
+			"Type": "String"
+		},
+		"InstanceType": {
+			"Type": "String"
+		},
+		"KeyName": {
+			"Type": "String"
+		},
+		"SubnetId": {
+			"Type": "String"
+		},
+		"GroupName": {
+			"Type": "String"
+		},
+		"HostedZoneId": {
+			"Type": "String"
+		},
+		"Name": {
+			"Type": "String"
+		},
+		"VpcId": {
+			"Type": "String"
+		},
+		"SUBNETID2": {
+			"Type": "String"
+		}
 	},
-	"KeyName":{
-		"Type":"String"
-	},
-	"SubnetId":{
-		"Type":"String"
-	},
-	"GroupName":{
-		"Type":"String"
-	},
-	"HostedZoneId":{
-		"Type":"String"
-	},
-	"Name":{
-		"Type":"String"
-	},
-	"VpcId":{
-		"Type":"String"	
-	}	
-    },
-    "Resources": {
-        "EC2Instance": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-		"ImageId" :{"Ref":"ImageId"},
-                "InstanceType":{"Ref":"InstanceType"},
-                "SecurityGroupIds": [
-                    {
-                        "Fn::GetAtt": [
-                            "WebServerSecurityGroup",
-                            "GroupId"
-                        ]
-                    }
-                ],
-                "KeyName":{"Ref":"KeyName"},
-                "SubnetId":{"Ref":"SubnetId"},
-		"BlockDeviceMappings" : [
-          	   {
-            		"DeviceName" : "/dev/sdf",
-            		"Ebs" : { "VolumeSize" : "16", "VolumeType" : "gp2" } 
-          	   }
-        	]
-            }
-        },
-        "WebServerSecurityGroup": {
-            "Type": "AWS::EC2::SecurityGroup",
-            "Properties": {
-		"GroupName" :{"Ref":"GroupName"},
-                "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
-                "VpcId": {"Ref":"VpcId"},
-                "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    },
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
-                        "CidrIp": "0.0.0.0/0"
-                    },
-		    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "443",
-                        "ToPort": "443",
-                        "CidrIp": "0.0.0.0/0"
-                    }
-                ]
-            }
-        },
-	"ResourceRecords" : {
-	    "Type" : "AWS::Route53::RecordSet",	
-  	    "Properties" : {
-		"HostedZoneId" : {"Ref":"HostedZoneId"},
-		"Name" : {"Ref":"Name"},
-		"ResourceRecords" : [ 
-			{
-			   "Fn::GetAtt": [
-                            "EC2Instance",
-                            "PublicIp"
-                          ]
+	"Resources": {
+		"EC2Instance": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": {
+					"Ref": "ImageId"
+				},
+				"InstanceType": {
+					"Ref": "InstanceType"
+				},
+				"SecurityGroupIds": [{
+					"Fn::GetAtt": [
+						"WebServerSecurityGroup",
+						"GroupId"
+					]
+				}],
+				"KeyName": {
+					"Ref": "KeyName"
+				},
+				"SubnetId": {
+					"Ref": "SubnetId"
+				},
+				"BlockDeviceMappings": [{
+					"DeviceName": "/dev/sdf",
+					"Ebs": {
+						"VolumeSize": "16",
+						"VolumeType": "gp2"
+					}
+				}]
 			}
-		 ],
-		"TTL" : "60",
-		"Type" : "A"
-  	     }
+		},
+		"WebServerSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupName": {
+					"Ref": "GroupName"
+				},
+				"GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
+				"VpcId": {
+					"Ref": "VpcId"
+				},
+				"SecurityGroupIngress": [{
+						"IpProtocol": "tcp",
+						"FromPort": "80",
+						"ToPort": "80",
+						"CidrIp": "0.0.0.0/0"
+					},
+					{
+						"IpProtocol": "tcp",
+						"FromPort": "22",
+						"ToPort": "22",
+						"CidrIp": "0.0.0.0/0"
+					},
+					{
+						"IpProtocol": "tcp",
+						"FromPort": "443",
+						"ToPort": "443",
+						"CidrIp": "0.0.0.0/0"
+					}
+				]
+			}
+		},
+		"ResourceRecords": {
+			"Type": "AWS::Route53::RecordSet",
+			"Properties": {
+				"HostedZoneId": {
+					"Ref": "HostedZoneId"
+				},
+				"Name": {
+					"Ref": "Name"
+				},
+				"ResourceRecords": [{
+					"Fn::GetAtt": [
+						"EC2Instance",
+						"PublicIp"
+					]
+				}],
+				"TTL": "60",
+				"Type": "A"
+			}
+		},
+		"DBServerSubnetGroup": {
+			"Type": "AWS::RDS::DBSubnetGroup",
+			"Properties": {
+				"DBSubnetGroupDescription": "RDS Security Group",
+				"SubnetIds": [{
+					"Ref": "SubnetId"
+				}, {
+					"Ref": "SUBNETID2"
+				}]
+			}
+		},
+		"MyDB": {
+			"Type": "AWS::RDS::DBInstance",
+			"Properties": {
+				"Engine": "MySQL",
+				"EngineVersion": "5.6.35",
+				"DBInstanceClass": "db.t2.medium",
+				"MultiAZ": "No",
+				"StorageType": "gp2",
+				"AllocatedStorage": "10",
+				"DBInstanceIdentifier": "csye6225-fall2017",
+				"MasterUsername": "csye6225master",
+				"MasterUserPassword": "csye6225password",
+				"DBSubnetGroupName": {
+					"Ref": "DBServerSubnetGroup"
+				},
+				"VPCSecurityGroups": [{
+					"Fn::GetAtt": ["DBSecurityGroup", "GroupId"]
+				}],
+				"DBName": "csye6225",
+				"PubliclyAccessible":"No"
+			}
+		},
+		"DBSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupName": "csye6225-rds",
+				"GroupDescription": "Open database for access",
+				"VpcId": {
+					"Ref": "VpcId"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "3306",
+					"ToPort": "3306",
+					"SourceSecurityGroupName": {"Ref":"WebServerSecurityGroup"}
+				}]
+			}
+		}
+
 	}
-    }
 }
