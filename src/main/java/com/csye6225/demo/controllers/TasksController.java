@@ -329,10 +329,10 @@ public class TasksController {
                 System.out.println(""+e.getMessage());
             }
 
-//            if (StringUtils.isEmpty(uploadedFileName)) {
-//                json.addProperty("message","Please select a file!");
-//                return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
-//            }
+            if (StringUtils.isEmpty(uploadedFileName)) {
+                json.addProperty("message","Please select a file!");
+                return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+            }
 
             json.addProperty("message","Saved the file(s)!");
             return new ResponseEntity(json.toString(), HttpStatus.OK);
