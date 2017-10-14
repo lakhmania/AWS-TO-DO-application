@@ -5,6 +5,7 @@ package com.csye6225.demo.controllers;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,13 +50,15 @@ public class TasksController {
     private TasksRepository taskRepo;
 
 
- @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json")
+ @RequestMapping(value = "/tasks/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
 
-     JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
         Tasks task = taskRepo.findByTaskId(id);
 
+        String tempDesc = description.split(":")[1];
+        String desc = tempDesc.substring(0,tempDesc.indexOf("}")-1);
         User taskUser = task.getUser();
 
         String auth = request.getHeader("Authorization");
@@ -73,12 +76,12 @@ public class TasksController {
             }
         }
 
-        if (description.length() > 4096) {
+        if (desc.length() > 4096) {
             json.addProperty("message","description more than 4096 characters");
             return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
         }
 
-        taskRepo.updateTaskDescription(description,task.getTaskId());
+        taskRepo.updateTaskDescription(desc,task.getTaskId());
         json.addProperty("message","description updated");
         return new ResponseEntity(json.toString(),HttpStatus.OK);
 }
