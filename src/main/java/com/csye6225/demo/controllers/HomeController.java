@@ -10,9 +10,7 @@ package com.csye6225.demo.controllers;
 
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserDetails;
-import com.csye6225.demo.pojo.UserSession;
 import com.csye6225.demo.repo.UserRepository;
-import com.csye6225.demo.repo.UserSessionRepository;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +19,13 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Date;
 
 @Controller
@@ -33,10 +35,6 @@ public class HomeController {
 
   @Autowired
   private UserRepository userRepo;
-
-  @Autowired
-  private UserSessionRepository userSessionRepo;
-
 
   @Autowired
   private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -67,18 +65,10 @@ public class HomeController {
     System.out.println(details.getUserName());
     System.out.println(details.getPassword());
 
-
-
-    UserSession userSession = new UserSession();
-    userSession.setSessionId(request.getSession().getId());
-
     JsonObject json = new JsonObject();
     User existingUser = userRepo.findByUserName(details.getUserName());
 
     User user = new User(details.getUserName(),  bCryptPasswordEncoder.encode(details.getPassword()));
-    user.getUserSessions().add(userSession);
-    userSession.setUser(user);
-
     if(existingUser == null){
       userRepo.save(user);
       json.addProperty("message", "User added successfully");
