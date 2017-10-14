@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -46,10 +47,11 @@ public class TasksController {
 
     }
 
-    @RequestMapping(value = "/tasks/{id}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> deleteTask(@PathParam("id") String id) {
+    public ResponseEntity<String> deleteTask(@PathVariable(value="id") String id) {
 
+        System.out.print(id);
         JsonObject jsonObject = new JsonObject();
 
         Tasks task = taskRepo.findByTaskId(id);
@@ -64,7 +66,7 @@ public class TasksController {
 
             }
             catch(Exception e){
-
+                System.out.println(e);
                 return new ResponseEntity("Couldnot delete task", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 

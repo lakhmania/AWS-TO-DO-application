@@ -9,14 +9,22 @@
 package com.csye6225.demo.repo;
 
 import com.csye6225.demo.pojo.Tasks;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import javax.transaction.Transactional;
 
 
 @Repository
 public interface TasksRepository extends CrudRepository<Tasks, String> {
 
     Tasks findByTaskId(String id);
+
+    @Modifying
+    @Transactional
+    @Query("delete from Tasks where taskId=?1")
     void deleteByTaskId(String id);
 
 
