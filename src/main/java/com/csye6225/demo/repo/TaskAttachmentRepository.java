@@ -8,11 +8,17 @@ package com.csye6225.demo.repo;
  * <Chintan Koticha>, <001267049>, <koticha.c@husky.neu.edu>
  * <Apoorva Lakhmani>, <001256312>, <lakhmani.a@husky.neu.edu>
  */
+
 import com.csye6225.demo.pojo.TaskAttachments;
+import com.csye6225.demo.pojo.Tasks;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
 
-public interface TaskAttachmentRepository extends CrudRepository<TaskAttachments, Long> {
 
 
+@Repository
+public interface TaskAttachmentRepository extends CrudRepository<TaskAttachments,Integer> {
 
+   List<TaskAttachments> findByTask(Tasks task);
 }
