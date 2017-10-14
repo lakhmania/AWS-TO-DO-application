@@ -1,3 +1,10 @@
+/**
+ * <Neha Lalwani>, <001268916>, <lalwani.n@husky.neu.edu>
+ * <Nirali Merchant>, <001268909>, <merchant.n@husky.neu.edu>
+ * <Chintan Koticha>, <001267049>, <koticha.c@husky.neu.edu>
+ * <Apoorva Lakhmani>, <001256312>, <lakhmani.a@husky.neu.edu>
+ */
+
 package com.csye6225.demo.controllers;
 
 
@@ -7,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,7 +22,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 import com.csye6225.demo.pojo.TaskAttachments;
 import com.csye6225.demo.pojo.Tasks;
 import com.csye6225.demo.pojo.User;
@@ -23,10 +37,10 @@ import com.csye6225.demo.repo.TasksRepository;
 import com.csye6225.demo.repo.UserRepository;
 import org.json.simple.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/tasks")
 @Controller
@@ -279,6 +293,142 @@ public class TasksController {
             return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
+    }
+
+
+    @RequestMapping(value = "/tasks/{id}/attachments", method = RequestMethod.POST, produces = "application/json",consumes = "multipart/form-data")
+    @ResponseBody
+    public ResponseEntity<String> addAttachments(HttpServletRequest request, @PathVariable("id") String id,@RequestParam("files") MultipartFile[] uploadfiles) {
+        JsonObject json = new JsonObject();
+        //Tasks tasks = taskrepo.findById(id);
+        Tasks task = taskRepo.findTasksByTaskId(id);
+        if(task==null){
+            json.addProperty("message","No such task found!!");
+            return  new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
+        }
+        String auth = request.getHeader("Authorization");
+
+        String[] values = null;
+        String username = null;
+        JSONArray jsonArray = null;
+        if (auth != null && auth.startsWith("Basic")) {
+            String base64Credentials = auth.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                    Charset.forName("UTF-8"));
+
+            values = credentials.split(":", 2);
+            username = values[0];
+        }
+
+        if (username.equals(task.getUser().getUserName())) {
+            //List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
+            String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename()).filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
+            try{
+                saveUploadedFiles(Arrays.asList(uploadfiles),task);
+            }catch(Exception e){
+                System.out.println(""+e.getMessage());
+            }
+
+//            if (StringUtils.isEmpty(uploadedFileName)) {
+//                json.addProperty("message","Please select a file!");
+//                return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+//            }
+
+            json.addProperty("message","Saved the file(s)!");
+            return new ResponseEntity(json.toString(), HttpStatus.OK);
+        }
+        else
+        {
+            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @RequestMapping(value = "/tasks/{id}/attachments/{idAttachments}", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<String> deleteAttachments(HttpServletRequest request, @PathVariable("idAttachments") String attachmentid, @PathVariable("id") String id) {
+        JsonObject json = new JsonObject();
+
+        Tasks task = taskRepo.findTasksByTaskId(id);
+        if(task==null){
+            json.addProperty("message","No such task found!!");
+            return  new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        String auth = request.getHeader("Authorization");
+        String[] values = null;
+        String username = null;
+        JSONArray jsonArray = null;
+        if (auth != null && auth.startsWith("Basic")) {
+            String base64Credentials = auth.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                    Charset.forName("UTF-8"));
+
+            values = credentials.split(":", 2);
+            username = values[0];
+        }
+
+        if (username.equals(task.getUser().getUserName())) {
+            try{
+                int aid = 0;
+                try {
+                    aid = Integer.parseInt(attachmentid);
+                }catch(Exception e){
+                    json.addProperty("message","Attachment Id can only be numbers!!");
+                    return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+                }
+                TaskAttachments ta = taskAttachmentRepo.findTaskAttachmentsByTaskAttachmentId(aid);
+                if(ta==null){
+                    json.addProperty("message","No such attachments with the Id!!");
+                    return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+                }
+                String path = ta.getFileName();
+                Files.deleteIfExists(Paths.get(path));
+                taskAttachmentRepo.delete(aid);
+                taskRepo.save(task);
+            }catch(Exception e){
+                System.out.println(""+e.getMessage());
+            }
+
+            json.addProperty("message","Deleted the attachment!");
+            return new ResponseEntity(json.toString(), HttpStatus.OK);
+        }
+        else
+        {
+            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void saveUploadedFiles(List<MultipartFile> files,Tasks tasks) throws IOException {
+
+        for (MultipartFile file : files) {
+
+            if (file.isEmpty()) {
+                continue; //next pls
+            }
+            try {
+
+                Path rootPath = Paths.get("//home//chintankoticha//CSYE6225//uploads//");
+                File dir = new File(rootPath + File.separator);
+                if (!dir.exists()){
+                    dir.mkdirs();
+                }
+
+                try{
+                    Files.copy(file.getInputStream(), rootPath.resolve(file.getOriginalFilename()));
+                }catch(Exception e){
+                    System.out.println(""+e.getMessage());
+                }
+                System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
+                TaskAttachments ta = new TaskAttachments();
+
+                taskRepo.save(tasks);
+                ta.setFileName(rootPath.resolve(file.getOriginalFilename()).toString());
+                ta.setTask(tasks);
+                taskAttachmentRepo.save(ta);
+            } catch (Exception e) {
+                System.out.println("You failed to upload " + e.getMessage());
+            }
+        }
     }
     }
 

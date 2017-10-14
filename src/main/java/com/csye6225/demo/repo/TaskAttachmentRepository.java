@@ -21,4 +21,5 @@ import java.util.List;
 public interface TaskAttachmentRepository extends CrudRepository<TaskAttachments,Integer> {
 
    List<TaskAttachments> findByTask(Tasks task);
+   TaskAttachments findTaskAttachmentsByTaskAttachmentId(int taskAttachmentId);
 }
