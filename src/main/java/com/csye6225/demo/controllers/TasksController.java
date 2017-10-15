@@ -371,6 +371,13 @@ public class TasksController {
 
     }
 
+    /**
+     * This methods attaches the attachments for the given task id passed in request
+     * @param request : HTTP Request
+     * @param id : Task ID
+     * @param uploadfiles : Attachments files
+     * @return : Http status with message
+     */
     @RequestMapping(value = "/{id}/attachments", method = RequestMethod.POST, produces = "application/json", consumes = "multipart/form-data")
     @ResponseBody
     public ResponseEntity<String> addAttachments(HttpServletRequest request, @PathVariable("id") String id, @RequestParam("files") MultipartFile[] uploadfiles) {
@@ -427,6 +434,13 @@ public class TasksController {
         }
     }
 
+    /**
+     * This methods deletes the attachments for the given task id and attachment id passed in request
+     * @param request : HTTP Request
+     * @param attachmentid : Attachment ID
+     * @param id : Task ID
+     * @return : Http status with message
+     */
     @RequestMapping(value = "/{id}/attachments/{idAttachments}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> deleteAttachments(HttpServletRequest request, @PathVariable("idAttachments") String attachmentid, @PathVariable("id") String id) {
