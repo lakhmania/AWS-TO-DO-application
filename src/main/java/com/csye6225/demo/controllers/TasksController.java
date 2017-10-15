@@ -91,14 +91,16 @@ public class TasksController {
                         userRepo.save(user);
                         System.out.print(task.getId());
                         writeCsvFile(System.getProperty("user.home")+"/savedTasks.csv",task);
+                        json.addProperty("description",task.getDescription());
+                        json.addProperty("id",task.getTaskId().toString());
+                        return new ResponseEntity<>(json.toString(), HttpStatus.OK);
                     }
                     catch (Exception e){
                         System.out.print(e);
                         json.addProperty("message","Error creating task");
                         return new ResponseEntity<>(json.toString(),HttpStatus.INTERNAL_SERVER_ERROR );
                     }
-                    json.addProperty("message","Task Created Succesfully");
-                    return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+
 
             }
             else{
