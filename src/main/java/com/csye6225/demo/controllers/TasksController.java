@@ -62,6 +62,15 @@ public class TasksController {
     @Autowired
     private TasksRepository taskRepo;
 
+
+    /**
+     * This methods creates the task for a user
+     * @param desc - Task description
+     * @param request : HTTP Request
+     * @return : Http status with message
+     */
+
+
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @ResponseBody
     public ResponseEntity<String> createTask(@RequestBody Description desc, HttpServletRequest request) {
@@ -105,6 +114,15 @@ public class TasksController {
             return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    /**
+     * This method accepts a task ID and deletes a task belonging to a particular user
+     * @param id - Task ID
+     * @param request : HTTP Request
+     * @return : Http status with message
+     */
+
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
