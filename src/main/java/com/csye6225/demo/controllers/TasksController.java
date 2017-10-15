@@ -100,9 +100,6 @@ public class TasksController {
             return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
 
-
-
-
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
@@ -343,7 +340,7 @@ public class TasksController {
         }
     }
 
-    @RequestMapping(value = "/tasks/{id}/attachments/{idAttachments}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/{id}/attachments/{idAttachments}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> deleteAttachments(HttpServletRequest request, @PathVariable("idAttachments") String attachmentid, @PathVariable("id") String id) {
         JsonObject json = new JsonObject();
