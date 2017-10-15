@@ -284,10 +284,10 @@ public class TasksController {
                 return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
             }
 
-            taskRepo.updateTaskDescription(description.getDescription(),task.getTaskId());
-            json.addProperty("id" , id);
-            json.addProperty("description",description.getDescription());
-            return new ResponseEntity(json.toString(),HttpStatus.OK);
+            taskRepo.updateTaskDescription(description.getDescription(), task.getTaskId());
+            json.addProperty("id", id);
+            json.addProperty("description", description.getDescription());
+            return new ResponseEntity(json.toString(), HttpStatus.OK);
 
         } else {
 
@@ -352,31 +352,33 @@ public class TasksController {
 
             values = credentials.split(":", 2);
             username = values[0];
-        }
 
-        if (username.equals(task.getUser().getUserName())) {
-            //List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
-            String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename()).filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
-            try {
-                String error = null;
-                error = saveUploadedFiles(Arrays.asList(uploadfiles), task);
-                if(error.equalsIgnoreCase("error")){
-                    json.addProperty("error","An error occured while uploading files!!");
-                    json.addProperty("probable","Maybe the file already exists!!");
+
+            if (username.equals(task.getUser().getUserName())) {
+                //List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
+                String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename()).filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
+                try {
+                    String error = null;
+                    error = saveUploadedFiles(Arrays.asList(uploadfiles), task);
+                    if (error.equalsIgnoreCase("error")) {
+                        json.addProperty("error", "An error occured while uploading files!!");
+                        json.addProperty("probable", "Maybe the file already exists!!");
+                        return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+                    }
+                } catch (Exception e) {
+                    System.out.println("" + e.getMessage());
+                }
+
+                if (StringUtils.isEmpty(uploadedFileName)) {
+                    json.addProperty("message", "Please select a file!");
                     return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
                 }
-            } catch (Exception e) {
-                System.out.println("" + e.getMessage());
-            }
 
-            if (StringUtils.isEmpty(uploadedFileName)) {
-                json.addProperty("message", "Please select a file!");
-                return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+                json.addProperty("message", "Saved the file(s)!");
+                return new ResponseEntity(json.toString(), HttpStatus.OK);
             }
-
-            json.addProperty("message", "Saved the file(s)!");
-            return new ResponseEntity(json.toString(), HttpStatus.OK);
         } else {
+            json.addProperty("message", "You are not logged in!!");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -404,33 +406,35 @@ public class TasksController {
 
             values = credentials.split(":", 2);
             username = values[0];
-        }
 
-        if (username.equals(task.getUser().getUserName())) {
-            try {
-                int aid = 0;
+
+            if (username.equals(task.getUser().getUserName())) {
                 try {
-                    aid = Integer.parseInt(attachmentid);
+                    int aid = 0;
+                    try {
+                        aid = Integer.parseInt(attachmentid);
+                    } catch (Exception e) {
+                        json.addProperty("message", "Attachment Id can only be numbers!!");
+                        return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+                    }
+                    TaskAttachments ta = taskAttachmentRepo.findTaskAttachmentsByTaskAttachmentId(aid);
+                    if (ta == null) {
+                        json.addProperty("message", "No such attachments with the Id!!");
+                        return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+                    }
+                    String path = ta.getFileName();
+                    Files.deleteIfExists(Paths.get(path));
+                    taskAttachmentRepo.delete(aid);
+                    taskRepo.save(task);
                 } catch (Exception e) {
-                    json.addProperty("message", "Attachment Id can only be numbers!!");
-                    return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+                    System.out.println("" + e.getMessage());
                 }
-                TaskAttachments ta = taskAttachmentRepo.findTaskAttachmentsByTaskAttachmentId(aid);
-                if (ta == null) {
-                    json.addProperty("message", "No such attachments with the Id!!");
-                    return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
-                }
-                String path = ta.getFileName();
-                Files.deleteIfExists(Paths.get(path));
-                taskAttachmentRepo.delete(aid);
-                taskRepo.save(task);
-            } catch (Exception e) {
-                System.out.println("" + e.getMessage());
-            }
 
-            json.addProperty("message", "Deleted the attachment!");
-            return new ResponseEntity(json.toString(), HttpStatus.OK);
+                json.addProperty("message", "Deleted the attachment!");
+                return new ResponseEntity(json.toString(), HttpStatus.OK);
+            }
         } else {
+            json.addProperty("message", "You are not logged in!!");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -444,7 +448,7 @@ public class TasksController {
             try {
 
                 Path rootPath = Paths.get(System.getProperty("java.io.tmpdir"));
-                File dir = new File(rootPath + File.separator + ""+tasks.getUser().getUserName());
+                File dir = new File(rootPath + File.separator + "" + tasks.getUser().getUserName());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
@@ -453,7 +457,7 @@ public class TasksController {
                     Files.copy(file.getInputStream(), rootPath.resolve(file.getOriginalFilename()));
                 } catch (Exception e) {
                     System.out.println("" + e.getMessage());
-                    return("error");
+                    return ("error");
                 }
                 System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
                 TaskAttachments ta = new TaskAttachments();
@@ -464,7 +468,7 @@ public class TasksController {
                 taskAttachmentRepo.save(ta);
             } catch (Exception e) {
                 System.out.println("You failed to upload " + e.getMessage());
-                return("error");
+                return ("error");
             }
         }
         return ("");
