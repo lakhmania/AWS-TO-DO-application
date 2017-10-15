@@ -358,7 +358,13 @@ public class TasksController {
             //List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
             String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename()).filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
             try {
-                saveUploadedFiles(Arrays.asList(uploadfiles), task);
+                String error = null;
+                error = saveUploadedFiles(Arrays.asList(uploadfiles), task);
+                if(error.equalsIgnoreCase("error")){
+                    json.addProperty("error","An error occured while uploading files!!");
+                    json.addProperty("probable","Maybe the file already exists!!");
+                    return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+                }
             } catch (Exception e) {
                 System.out.println("" + e.getMessage());
             }
@@ -429,8 +435,7 @@ public class TasksController {
         }
     }
 
-    private void saveUploadedFiles(List<MultipartFile> files, Tasks tasks) throws IOException {
-
+    private String saveUploadedFiles(List<MultipartFile> files, Tasks tasks) throws IOException {
         for (MultipartFile file : files) {
 
             if (file.isEmpty()) {
@@ -439,15 +444,16 @@ public class TasksController {
             try {
 
                 Path rootPath = Paths.get(System.getProperty("java.io.tmpdir"));
-                File dir = new File(rootPath + File.separator);
+                File dir = new File(rootPath + File.separator + ""+tasks.getUser().getUserName());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
-
+                rootPath = Paths.get(dir.getAbsolutePath());
                 try {
                     Files.copy(file.getInputStream(), rootPath.resolve(file.getOriginalFilename()));
                 } catch (Exception e) {
                     System.out.println("" + e.getMessage());
+                    return("error");
                 }
                 System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
                 TaskAttachments ta = new TaskAttachments();
@@ -458,8 +464,10 @@ public class TasksController {
                 taskAttachmentRepo.save(ta);
             } catch (Exception e) {
                 System.out.println("You failed to upload " + e.getMessage());
+                return("error");
             }
         }
+        return ("");
     }
 }
 
