@@ -296,8 +296,8 @@ public class TasksController {
             }
 
             taskRepo.updateTaskDescription(description.getDescription(),task.getTaskId());
-            json.addProperty("message","description updated");
-            json.addProperty("TaskId" , id);
+            json.addProperty("id" , id);
+            json.addProperty("description",description.getDescription());
             return new ResponseEntity(json.toString(),HttpStatus.OK);
 
         } else {
