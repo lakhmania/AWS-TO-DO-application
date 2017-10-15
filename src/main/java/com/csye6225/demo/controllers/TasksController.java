@@ -260,6 +260,13 @@ public class TasksController {
 
         }
 
+    /**
+     * This methods updates the task description for the given task id with the description passed in request
+     * @param id - Task ID
+     * @param description - Task description
+     * @param request : HTTP Request
+     * @return : Http status with message
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody Description description, HttpServletRequest request) {

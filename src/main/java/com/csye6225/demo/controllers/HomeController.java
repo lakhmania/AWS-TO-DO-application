@@ -26,12 +26,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Date;
 
 @Controller
 public class HomeController {
 
   private final static Logger logger = LoggerFactory.getLogger(HomeController.class);
+
+  private final String NEW_LINE_SEPARATOR = "\n";
+  private final String COMMA_SEPARATOR = ",";
+  private final String FILE_HEADER = "userId" + "," + "password";
 
   @Autowired
   private UserRepository userRepo;
@@ -59,7 +65,7 @@ public class HomeController {
 
   @RequestMapping(value = "/user/register", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
   @ResponseBody
-  public String save(@RequestBody UserDetails details, HttpServletRequest request) {
+  public String save(@RequestBody UserDetails details, HttpServletRequest request) throws Exception{
 
     System.out.println("Inside save method");
     System.out.println(details.getUserName());
@@ -71,6 +77,9 @@ public class HomeController {
     User user = new User(details.getUserName(),  bCryptPasswordEncoder.encode(details.getPassword()));
     if(existingUser == null){
       userRepo.save(user);
+
+      writeUsersToCsv(System.getProperty("user.home") + "/users.csv", user);
+
       json.addProperty("message", "User added successfully");
       //json.addProperty("sessionId", request.getSession().getId());
     }else{
@@ -78,6 +87,40 @@ public class HomeController {
     }
 
     return json.toString();
+  }
+
+  private void writeUsersToCsv(String filename, User user) throws Exception{
+    File file = new File(filename);
+    System.out.println("file:"+ file.getAbsolutePath());
+    FileWriter fileWriter = null;
+
+    try {
+
+      if (file.exists()) {
+        fileWriter = new FileWriter(filename, true);
+
+      } else {
+
+        fileWriter = new FileWriter(filename);
+        fileWriter.append(FILE_HEADER.toString());
+        fileWriter.append(NEW_LINE_SEPARATOR);
+      }
+
+      fileWriter.append(user.getUserName());
+      fileWriter.append(COMMA_SEPARATOR);
+      fileWriter.append(user.getPassword());
+      fileWriter.append(NEW_LINE_SEPARATOR);
+      System.out.println("CSV file was created successfully !!!");
+    } catch (Exception e) {
+      System.out.println("Error in CsvFileWriter !!!");
+      e.printStackTrace();
+    } finally {
+
+      fileWriter.flush();
+      fileWriter.close();
+
+    }
+
   }
 
   @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json")
