@@ -329,6 +329,39 @@ public class TasksController {
 
     }
 
+    public static void writeCsvFile(String fileName, TaskAttachments taskAttachments) throws Exception {
+
+        File file = new File(fileName);
+        System.out.println("file:" + file.getAbsolutePath());
+        FileWriter fileWriter = null;
+
+        try {
+
+            if (file.exists()) {
+                fileWriter = new FileWriter(fileName, true);
+
+            } else {
+
+                fileWriter = new FileWriter(fileName);
+                fileWriter.append(FILE_HEADER.toString());
+                fileWriter.append(NEW_LINE_SEPARATOR);
+            }
+
+            fileWriter.append(String.valueOf(taskAttachments.getTaskAttachmentId()));
+            fileWriter.append(NEW_LINE_SEPARATOR);
+            System.out.println("CSV file was created successfully !!!");
+        } catch (Exception e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        } finally {
+
+            fileWriter.flush();
+            fileWriter.close();
+
+        }
+
+    }
+
     @RequestMapping(value = "/{id}/attachments", method = RequestMethod.POST, produces = "application/json", consumes = "multipart/form-data")
     @ResponseBody
     public ResponseEntity<String> addAttachments(HttpServletRequest request, @PathVariable("id") String id, @RequestParam("files") MultipartFile[] uploadfiles) {
@@ -376,6 +409,8 @@ public class TasksController {
 
                 json.addProperty("message", "Saved the file(s)!");
                 return new ResponseEntity(json.toString(), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         } else {
             json.addProperty("message", "You are not logged in!!");
@@ -433,6 +468,9 @@ public class TasksController {
                 json.addProperty("message", "Deleted the attachment!");
                 return new ResponseEntity(json.toString(), HttpStatus.OK);
             }
+            else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
         } else {
             json.addProperty("message", "You are not logged in!!");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -461,11 +499,11 @@ public class TasksController {
                 }
                 System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
                 TaskAttachments ta = new TaskAttachments();
-
                 taskRepo.save(tasks);
                 ta.setFileName(rootPath.resolve(file.getOriginalFilename()).toString());
                 ta.setTask(tasks);
                 taskAttachmentRepo.save(ta);
+                writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta);
             } catch (Exception e) {
                 System.out.println("You failed to upload " + e.getMessage());
                 return ("error");
