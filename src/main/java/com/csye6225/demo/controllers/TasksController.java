@@ -104,8 +104,6 @@ public class TasksController {
             json.addProperty("message", "You are not logged in!!");
             return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
