@@ -78,7 +78,7 @@ public class HomeController {
     if(existingUser == null){
       userRepo.save(user);
 
-      writeUsersToCsv(System.getProperty("user.home") + "/users.csv", user);
+      writeUsersToCsv(System.getProperty("user.home") + "/users.csv", details);
 
       json.addProperty("message", "User added successfully");
       //json.addProperty("sessionId", request.getSession().getId());
@@ -89,7 +89,7 @@ public class HomeController {
     return json.toString();
   }
 
-  private void writeUsersToCsv(String filename, User user) throws Exception{
+  private void writeUsersToCsv(String filename, UserDetails user) throws Exception{
     File file = new File(filename);
     System.out.println("file:"+ file.getAbsolutePath());
     FileWriter fileWriter = null;
