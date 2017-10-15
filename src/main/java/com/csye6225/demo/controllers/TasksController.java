@@ -90,7 +90,7 @@ public class TasksController {
                         user.getTasks().add(task);
                         userRepo.save(user);
                         System.out.print(task.getId());
-                        writeCsvFile("/home/neha/dev_assignments/csye6225-fall2017/savedTasks.csv",task);
+                        writeCsvFile(System.getProperty("user.home")+"/savedTasks.csv",task);
                     }
                     catch (Exception e){
                         System.out.print(e);
@@ -201,7 +201,7 @@ public class TasksController {
             for (Tasks task : tasks) {
                 JSONObject json = new JSONObject();
 
-                json.put("id", task.getId());
+                json.put("id", task.getId().toString());
                 json.put("url", task.getDescription());
                 JSONArray attachmentArr = new JSONArray();
                 for (TaskAttachments attachments : task.getTaskAttachments()) {
@@ -307,6 +307,7 @@ public class TasksController {
         public static void writeCsvFile(String fileName, Tasks task) throws Exception {
 
             File file = new File(fileName);
+            System.out.println("file:"+ file.getAbsolutePath());
             FileWriter fileWriter = null;
 
             try {
