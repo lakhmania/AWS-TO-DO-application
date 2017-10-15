@@ -1,27 +1,26 @@
 package com.csye6225.demo.pojo;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.domain.Persistable;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
-
+import java.util.UUID;
 
 
 @Entity
 public class Tasks implements Persistable {
 
 
-    public Tasks(){}
-
-    public Tasks(String taskId, String description) {
-
-        this.taskId = taskId;
-        this.description = description;
-
+    public Tasks(){
     }
 
     @Id
-    private String taskId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID taskId;
 
     @Column(length = 5000)
     private String description;
@@ -33,12 +32,11 @@ public class Tasks implements Persistable {
     @JoinColumn(name="userId")
     private User user;
 
-
-    public String getTaskId() {
+    public UUID getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(String taskId) {
+    public void setTaskId(UUID taskId) {
         this.taskId = taskId;
     }
 

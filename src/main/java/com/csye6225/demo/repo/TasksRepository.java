@@ -13,29 +13,34 @@ import com.csye6225.demo.pojo.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
 
 @Repository
-public interface TasksRepository extends CrudRepository<Tasks,Long> {
+public interface TasksRepository extends CrudRepository<Tasks,UUID> {
 
-    Tasks findByTaskId(String id);
-    Tasks findTasksByTaskId(String taskId);
+
+    //@Query("select t from Tasks t where t.taskId = UNHEX(:taskId)")
+    Tasks findByTaskId(UUID id)
+            ;
+    Tasks findTasksByTaskId(UUID taskId);
     List<Tasks> findTasksByUser(User user);
     @Modifying
     @Transactional
     @Query(value="update Tasks set description = ?1 where taskId=?2")
-    void updateTaskDescription( String description, String taskId );
+    void updateTaskDescription( String description, UUID taskId );
 
-    Tasks findTaskByTaskId(String taskId);
+    Tasks findTaskByTaskId(UUID taskId);
 
 
-    @Modifying
-    @Transactional
-    @Query("delete from Tasks where taskId=?1")
-    void deleteByTaskId(String id);
+//    @Modifying
+//    @Transactional
+//    @Query("delete from Tasks where taskId=?1")
+//    void deleteByTaskId(UUID id);
 
 
 }

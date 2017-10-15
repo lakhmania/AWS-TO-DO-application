@@ -24,7 +24,6 @@ public class User implements Persistable {
 
         this.userName = userName;
         this.password = password;
-        tasks=new ArrayList<Tasks>();
     }
 
     @Id

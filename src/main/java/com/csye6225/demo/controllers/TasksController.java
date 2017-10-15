@@ -63,17 +63,16 @@ public class TasksController {
                 }
 
                 try {
-                    UUID id = UUID.randomUUID();
                     Tasks task = new Tasks();
                     task.setDescription(description);
-                    task.setTaskId(id.toString());
                     task.setUser(user);
                     user.getTasks().add(task);
-
                     userRepo.save(user);
+                    System.out.print(task.getId());
                 }
                 catch (Exception e){
-                    json.addProperty("message","Description length should not exceed 4096");
+                    System.out.print(e);
+                    json.addProperty("message","Error creating task");
                     return new ResponseEntity<>(json.toString(),HttpStatus.INTERNAL_SERVER_ERROR );
                 }
                 json.addProperty("message","Task Created Succesfully");
@@ -98,6 +97,7 @@ public class TasksController {
         JsonObject json = new JsonObject();
 
         String auth = request.getHeader("Authorization");
+        List<Tasks> tasks = (List<Tasks>) taskRepo.findAll();
 
         if (auth != null && auth.startsWith("Basic")) {
             String base64Credentials = auth.substring("Basic".length()).trim();
@@ -105,8 +105,8 @@ public class TasksController {
                     Charset.forName("UTF-8"));
 
             String[] values = credentials.split(":", 2);
-
-            Tasks task = taskRepo.findByTaskId(id);
+            UUID uid = UUID.fromString(id);
+            Tasks task = taskRepo.findByTaskId(uid);
             if (task==null) {
                 json.addProperty("message","Task Id not found");
                 return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
@@ -115,7 +115,7 @@ public class TasksController {
                 try{
                     User taskUser = task.getUser();
                     if(values[0].equals(taskUser.getUserName())){
-                        taskRepo.deleteByTaskId(id);
+                        taskRepo.delete(task);
                         json.addProperty("message","Task deleted successfully");
                         System.out.print(json.toString());
                         return new ResponseEntity(json.toString(), HttpStatus.OK);
@@ -143,47 +143,47 @@ public class TasksController {
     }
 
 
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
-    @ResponseBody
-    public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
-
-     JsonObject json = new JsonObject();
-        Tasks task = taskRepo.findByTaskId(id);
-
-        User taskUser = task.getUser();
-
-        String auth = request.getHeader("Authorization");
-
-        if (auth != null && auth.startsWith("Basic")) {
-            String base64Credentials = auth.substring("Basic".length()).trim();
-            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
-                 Charset.forName("UTF-8"));
-
-            final String[] values = credentials.split(":", 2);
-
-            if(!values[0].equals(taskUser.getUserName())){
-                json.addProperty("message","Not an authorized user");
-                 return new ResponseEntity(json.toString(),HttpStatus.FORBIDDEN);
-            }
-        }
-        else{
-
-            json.addProperty("message","You are not logged in!!");
-            return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
-        }
-
-
-        if (description.length() > 4096) {
-            json.addProperty("message","description more than 4096 characters");
-            return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
-        }
-
-        taskRepo.updateTaskDescription(description,task.getTaskId());
-        json.addProperty("message","description updated");
-        return new ResponseEntity(json.toString(),HttpStatus.OK);
-}
-  
+//
+//    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
+//    @ResponseBody
+//    public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
+//
+//     JsonObject json = new JsonObject();
+//        Tasks task = taskRepo.findByTaskId(id);
+//
+//        User taskUser = task.getUser();
+//
+//        String auth = request.getHeader("Authorization");
+//
+//        if (auth != null && auth.startsWith("Basic")) {
+//            String base64Credentials = auth.substring("Basic".length()).trim();
+//            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+//                 Charset.forName("UTF-8"));
+//
+//            final String[] values = credentials.split(":", 2);
+//
+//            if(!values[0].equals(taskUser.getUserName())){
+//                json.addProperty("message","Not an authorized user");
+//                 return new ResponseEntity(json.toString(),HttpStatus.FORBIDDEN);
+//            }
+//        }
+//        else{
+//
+//            json.addProperty("message","You are not logged in!!");
+//            return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
+//        }
+//
+//
+//        if (description.length() > 4096) {
+//            json.addProperty("message","description more than 4096 characters");
+//            return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+//        }
+//
+//        taskRepo.updateTaskDescription(description,task.getTaskId());
+//        json.addProperty("message","description updated");
+//        return new ResponseEntity(json.toString(),HttpStatus.OK);
+//}
+//
 
 
     @RequestMapping( method = RequestMethod.GET, produces = "application/json")
@@ -247,7 +247,8 @@ public class TasksController {
     public @ResponseBody
     ResponseEntity<String> getAttachments(@PathVariable(value = "id") String taskId, HttpServletRequest request) {
 
-        Tasks task = taskRepo.findTasksByTaskId(taskId);
+        UUID uid = UUID.fromString(taskId);
+        Tasks task = taskRepo.findTasksByTaskId(uid);
 
         String auth = request.getHeader("Authorization");
 
