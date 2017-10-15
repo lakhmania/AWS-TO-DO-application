@@ -12,6 +12,7 @@ import com.csye6225.demo.pojo.Description;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -160,16 +161,23 @@ public class TasksController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody String description, HttpServletRequest request) {
+    public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody Description description, HttpServletRequest request) {
 
-     JsonObject json = new JsonObject();
-        Tasks task = taskRepo.findByTaskId(id);
-
-        User taskUser = task.getUser();
+        JsonObject json = new JsonObject();
 
         String auth = request.getHeader("Authorization");
 
         if (auth != null && auth.startsWith("Basic")) {
+
+            Tasks task = taskRepo.findByTaskId(id);
+
+            if(task == null) {
+                json.addProperty("message","TaskId doesn't exists");
+                return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+            }
+
+            User taskUser = task.getUser();
+
             String base64Credentials = auth.substring("Basic".length()).trim();
             String credentials = new String(Base64.getDecoder().decode(base64Credentials),
                  Charset.forName("UTF-8"));
@@ -180,22 +188,21 @@ public class TasksController {
                 json.addProperty("message","Not an authorized user");
                  return new ResponseEntity(json.toString(),HttpStatus.FORBIDDEN);
             }
-        }
-        else{
 
-            json.addProperty("message","You are not logged in!!");
+            if (description.getDescription().length() > 4096) {
+                json.addProperty("message","description more than 4096 characters");
+                return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
+            }
+
+            taskRepo.updateTaskDescription(description.getDescription(),task.getTaskId());
+            json.addProperty("message","description updated");
+            return new ResponseEntity(json.toString(),HttpStatus.OK);
+
+        } else {
+
+            json.addProperty("message", "You are not logged in!!");
             return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
-
-
-        if (description.length() > 4096) {
-            json.addProperty("message","description more than 4096 characters");
-            return new ResponseEntity(json.toString(),HttpStatus.BAD_REQUEST);
-        }
-
-        taskRepo.updateTaskDescription(description,task.getTaskId());
-        json.addProperty("message","description updated");
-        return new ResponseEntity(json.toString(),HttpStatus.OK);
 }
   
 
