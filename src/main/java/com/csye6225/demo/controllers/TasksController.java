@@ -258,7 +258,7 @@ public class TasksController {
 
         }
 
-            @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody Description description, HttpServletRequest request) {
 
@@ -304,7 +304,7 @@ public class TasksController {
             json.addProperty("message", "You are not logged in!!");
             return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
-}
+    }
 
         public static void writeCsvFile(String fileName, Tasks task) throws Exception {
 
@@ -338,8 +338,6 @@ public class TasksController {
                 }
 
             }
-
-
 
     @RequestMapping(value = "/{id}/attachments", method = RequestMethod.POST, produces = "application/json",consumes = "multipart/form-data")
     @ResponseBody
@@ -454,7 +452,7 @@ public class TasksController {
             }
             try {
 
-                Path rootPath = Paths.get("//home//chintankoticha//CSYE6225//uploads//");
+                Path rootPath = Paths.get(System.getProperty("java.io.tmpdir"));
                 File dir = new File(rootPath + File.separator);
                 if (!dir.exists()){
                     dir.mkdirs();
