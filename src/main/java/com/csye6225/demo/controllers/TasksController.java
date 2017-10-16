@@ -13,7 +13,6 @@ import com.csye6225.demo.pojo.Description;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -382,7 +381,6 @@ public class TasksController {
 
             fileWriter.flush();
             fileWriter.close();
-
         }
 
     }
@@ -520,7 +518,7 @@ public class TasksController {
         for (MultipartFile file : files) {
 
             if (file.isEmpty()) {
-                continue; //next pls
+                continue;
             }
             try {
 
