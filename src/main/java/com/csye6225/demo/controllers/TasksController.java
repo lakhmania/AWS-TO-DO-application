@@ -48,10 +48,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/tasks")
 @Controller
 public class TasksController {
-    private static final String COMMA_DELIMITER = ",";
 
     private static final String NEW_LINE_SEPARATOR = "\n";
-    private static final String FILE_HEADER = "taskId";
 
     @Autowired
     private UserRepository userRepo;
@@ -61,6 +59,15 @@ public class TasksController {
 
     @Autowired
     private TasksRepository taskRepo;
+
+
+    /**
+     * This methods creates the task for a user
+     * @param desc - Task description
+     * @param request : HTTP Request
+     * @return : Http status with message
+     */
+
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @ResponseBody
@@ -91,13 +98,15 @@ public class TasksController {
                 userRepo.save(user);
                 System.out.print(task.getId());
                 writeCsvFile(System.getProperty("user.home") + "/savedTasks.csv", task);
+                json.addProperty("id", task.getTaskId().toString());
+                json.addProperty("description", task.getDescription());
+                return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+
             } catch (Exception e) {
                 System.out.print(e);
                 json.addProperty("message", "Error creating task");
                 return new ResponseEntity<>(json.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            json.addProperty("message", "Task Created Succesfully");
-            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
 
         } else {
 
@@ -105,6 +114,15 @@ public class TasksController {
             return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    /**
+     * This method accepts a task ID and deletes a task belonging to a particular user
+     * @param id - Task ID
+     * @param request : HTTP Request
+     * @return : Http status with message
+     */
+
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
@@ -246,8 +264,9 @@ public class TasksController {
         }
 
     }
-    
-  
+
+
+
   /**
      * This methods updates the task description for the given task id with the description passed in request
      * @param id - Task ID
@@ -255,7 +274,6 @@ public class TasksController {
      * @param request : HTTP Request
      * @return : Http status with message
      */
-
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> updateTasks(@PathVariable("id") String id, @RequestBody Description description, HttpServletRequest request) {
@@ -319,7 +337,6 @@ public class TasksController {
             } else {
 
                 fileWriter = new FileWriter(fileName);
-                fileWriter.append(FILE_HEADER.toString());
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
 
@@ -352,7 +369,6 @@ public class TasksController {
             } else {
 
                 fileWriter = new FileWriter(fileName);
-                fileWriter.append(FILE_HEADER.toString());
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
 
