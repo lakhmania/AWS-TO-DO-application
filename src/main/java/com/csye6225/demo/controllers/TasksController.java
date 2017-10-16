@@ -48,10 +48,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/tasks")
 @Controller
 public class TasksController {
-    private static final String COMMA_DELIMITER = ",";
 
     private static final String NEW_LINE_SEPARATOR = "\n";
-    private static final String FILE_HEADER = "taskId";
 
     @Autowired
     private UserRepository userRepo;
@@ -100,13 +98,15 @@ public class TasksController {
                 userRepo.save(user);
                 System.out.print(task.getId());
                 writeCsvFile(System.getProperty("user.home") + "/savedTasks.csv", task);
+                json.addProperty("id", task.getTaskId().toString());
+                json.addProperty("description", task.getDescription());
+                return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+
             } catch (Exception e) {
                 System.out.print(e);
                 json.addProperty("message", "Error creating task");
                 return new ResponseEntity<>(json.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            json.addProperty("message", "Task Created Succesfully");
-            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
 
         } else {
 
@@ -337,7 +337,6 @@ public class TasksController {
             } else {
 
                 fileWriter = new FileWriter(fileName);
-                fileWriter.append(FILE_HEADER.toString());
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
 
@@ -370,7 +369,6 @@ public class TasksController {
             } else {
 
                 fileWriter = new FileWriter(fileName);
-                fileWriter.append(FILE_HEADER.toString());
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
 

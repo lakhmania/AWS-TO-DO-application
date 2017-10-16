@@ -37,7 +37,6 @@ public class HomeController {
 
   private final String NEW_LINE_SEPARATOR = "\n";
   private final String COMMA_SEPARATOR = ",";
-  private final String FILE_HEADER = "userId" + "," + "password";
 
   @Autowired
   private UserRepository userRepo;
@@ -102,7 +101,6 @@ public class HomeController {
       } else {
 
         fileWriter = new FileWriter(filename);
-        fileWriter.append(FILE_HEADER.toString());
         fileWriter.append(NEW_LINE_SEPARATOR);
       }
 
