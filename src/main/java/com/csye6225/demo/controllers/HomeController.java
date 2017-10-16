@@ -37,7 +37,6 @@ public class HomeController {
 
   private final String NEW_LINE_SEPARATOR = "\n";
   private final String COMMA_SEPARATOR = ",";
-  private final String FILE_HEADER = "userId" + "," + "password";
 
   @Autowired
   private UserRepository userRepo;
@@ -78,7 +77,7 @@ public class HomeController {
     if(existingUser == null){
       userRepo.save(user);
 
-      writeUsersToCsv(System.getProperty("user.home") + "/users.csv", user);
+      writeUsersToCsv(System.getProperty("user.home") + "/users.csv", details);
 
       json.addProperty("message", "User added successfully");
       //json.addProperty("sessionId", request.getSession().getId());
@@ -89,7 +88,7 @@ public class HomeController {
     return json.toString();
   }
 
-  private void writeUsersToCsv(String filename, User user) throws Exception{
+  private void writeUsersToCsv(String filename, UserDetails user) throws Exception{
     File file = new File(filename);
     System.out.println("file:"+ file.getAbsolutePath());
     FileWriter fileWriter = null;
@@ -102,7 +101,6 @@ public class HomeController {
       } else {
 
         fileWriter = new FileWriter(filename);
-        fileWriter.append(FILE_HEADER.toString());
         fileWriter.append(NEW_LINE_SEPARATOR);
       }
 
