@@ -99,9 +99,7 @@ public class HomeController {
         fileWriter = new FileWriter(filename, true);
 
       } else {
-
         fileWriter = new FileWriter(filename);
-        fileWriter.append(NEW_LINE_SEPARATOR);
       }
 
       fileWriter.append(user.getUserName());
