@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 public class TasksController {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
+    private static final String COMMA_SEPARATOR = ",";
 
     @Autowired
     private UserRepository userRepo;
@@ -340,6 +341,10 @@ public class TasksController {
             }
 
             fileWriter.append(task.getId().toString());
+            fileWriter.append(COMMA_SEPARATOR);
+            fileWriter.append(task.getUser().getUserName());
+            fileWriter.append(COMMA_SEPARATOR);
+            fileWriter.append(task.getUser().getPassword());
             fileWriter.append(NEW_LINE_SEPARATOR);
             System.out.println("CSV file was created successfully !!!");
         } catch (Exception e) {
