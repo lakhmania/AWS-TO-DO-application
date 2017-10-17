@@ -337,7 +337,6 @@ public class TasksController {
             } else {
 
                 fileWriter = new FileWriter(fileName);
-                fileWriter.append(NEW_LINE_SEPARATOR);
             }
 
             fileWriter.append(task.getId().toString());
@@ -373,7 +372,6 @@ public class TasksController {
             } else {
 
                 fileWriter = new FileWriter(fileName);
-                fileWriter.append(NEW_LINE_SEPARATOR);
             }
 
             fileWriter.append(String.valueOf(taskAttachments.getTaskAttachmentId()));
