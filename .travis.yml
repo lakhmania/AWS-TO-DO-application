@@ -29,6 +29,17 @@ after_success:
 before_deploy:
   - cd ..
 
+deploy:
+
+  - provider: s3
+    access_key_id: AKIAIYECRDTJRXB5VBAA
+    secret_access_key:
+      secure: o7D1w2KJh00g61tG8qvJPK8W4uDT4ri5Vot/hSjmDXTmYRmP2ZkO25THMAfWsJGopf1Fu32m0Lb5oL1bD04NXdJLREFMf7bADvEEqxyFW9RD3BAOFukKsSr9fiTsgTSWmVkZ+tIZcPvHAaHvFZIhXIT3m6FqyopkVv759/P0eCxifmJepGF2XU0LoK+clssxabOncBFs6tAfuNUDQa5QVSXzf507tXx3jlPnkgabOEwTSQefzys79FrIMDMn4H5KpFl92OgY2ht7cbf18/gDbZTQ2IiLC9r4SCXZC7VtQexgPBWxF+5GsQcZL1KBRrARzlSjnePiE9MaBsMLp/z22u3YbmaRxHFvHfrDJFxPBCe1E7iUqO803O3ii9boJuBeJCGXkoIXWwQTP45sxEIx23AV3yi1P/bSYsNbvtsFqwOzq2uXi48MZPViFq6ztWToeOjRbO6H/h4ipk6+fYlfGVFTsXCvwSqxsg/CN23m0enCaWrTobYp6lhjxcBZ+RiY//rj6kqVJXd9p0I0fddLI6xY03uahgbKD4cXFgUdMhkrJLLzdOFaT5VhUnoLK4N30+QTnmT7aBflwv6SY+l6OXgms6w368GiSSoeMTuBdTYij8Tgi8CpEVE6dIR3faF/NNKRfEDOWYLz3ZLZPWLiWznRyCbWdNoFw3/xLXepIo4=
+    local_dir: codedeploy
+    bucket: code-deploy.csye6225-fall2017-lalwanin.me
+    region: us-east-1
+    skip_cleanup: true
+
 notifications:
   email:
     recipients:
