@@ -17,17 +17,17 @@ script:
   - ./gradlew test --info
 
 after_success:
-  -mkdir codedeploy
-  -zip -r csye6225-webapp.zip build/libs/ROOT.war appspec.yml
-  -ls -al
-  -mv -al
-  -pwd
-  -cd codedeploy
-  -ls -al
-  -pwd
+  - mkdir codedeploy
+  - zip -r csye6225-webapp.zip build/libs/ROOT.war appspec.yml
+  - ls -al
+  - mv -al
+  - pwd
+  - cd codedeploy
+  - ls -al
+  - pwd
 
 before_deploy:
-  -cd ..
+  - cd ..
 
 notifications:
   email:
