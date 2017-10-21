@@ -20,7 +20,7 @@ after_success:
   - mkdir codedeploy
   - zip -r csye6225-webapp.zip build/libs/ROOT.war appspec.yml
   - ls -al
-  - mv -al
+  - mv csye6225-webapp.zip codedeploy/
   - pwd
   - cd codedeploy
   - ls -al
