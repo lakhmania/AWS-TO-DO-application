@@ -40,6 +40,18 @@ deploy:
     skip_cleanup: true
     on:
       all_branches: true
+  - provider: codedeploy
+    access_key_id: AKIAIYECRDTJRXB5VBAA
+    bucket: code-deploy.csye6225-fall2017-lalwanin.me
+    key: csye6225-webapp.zip
+    bundle_type: zip
+    application: csye6225-webapp
+    deployment_group: csye6225-webapp
+    region: us-east-1
+    secret_access_key:
+       secure: VQSVSFp9zGCmy/iqwuxGWSbl6FLSG4a5RWZazhlzxR/MJZU7qktZPHmQbS5EjjQSKIlTiMGj8UqlVdNF4TnGzk8kCSK9AbEZCoXQRidK3TsuXnWzG3HVaksS7JGOlOHUsBnhmqhmZwPRmvMP11MYWsPFrqzzV6AngAHN5Nul8K23iIPHVQRiavnSyniPDIHaujGGcsFAPIpaZlgUohIXatlxAhrLRoz7o6c8cZRmE4kiaJiuIp4ZCGWrkMtFTQ+hM93KjJD3WKm/P8JS6JU+R6AzOdxOAUlW5od3AfrF+r3TEouylLil819Sz4v9Q9t4XnFzoJ1qXvH47sVReqMOuKwzgls//+Q7yQGvdPKQaRqTsmwuRPxVATBwSktYqZmxoopENhXk+FpydtDn/RELK26BCXbD0nwZhai4ZHBfkne9RAVO7o4hfr4pNBeKrGLxTRAxSdLsyM0MDnIOZFfwxULVXWHjyGZphKrj6vSfK94mRJfNrcaqHn1I3W4I8VQaenZXR7cMufoZV3/VilHcKLXR38p8l9q5pPE4frrvlodk+jKR/LMwMfumC7j0pnFdbzFU8wu/hOyiG/BkTz5Rpcr3Hxs8AihJ9L9YxaudU+5HOWJ4StUCvAUvTZYjNGfnSMfZcRfahMtiB7NTFdUdc6ZyHu+SEoIQUOGzrtblon4=
+    wait-until-deployed: true
+
 
 notifications:
   email:
