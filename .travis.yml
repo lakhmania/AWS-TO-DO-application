@@ -12,8 +12,35 @@ sudo: false
 install: true
 
 script:
+  - ./gradlew build
   - ./gradlew war
   - ./gradlew test --info
+
+after_success:
+  - mkdir codedeploy
+  - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml
+  - ls -al
+  - mv csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip codedeploy/
+  - ls -al
+  - pwd
+  - cd codedeploy
+  - ls -al
+  - pwd
+
+before_deploy:
+  - cd ..
+
+deploy:
+  - provider: s3
+    access_key_id: AKIAILBLMFW5N62UVCEQ
+    secret_access_key:
+      secure: sMcoKGKNjL8ZIU3Wf+SgsUPJPtov2yLzlna7GOXuZKC6ZWIC+8MWWeiqf+TZ7OeOUI9ton0YNnxEyk4KJAiJ4yR40X0rxs2bl/KHEqZo6EOqbFqabT/mbFZsbnljSo4CqZTReTN0i57oFbrOena9yym0fiTE2UGuNM7C2iIVZfkgOaLK4/ep0UUfLQngN9AXB/cB0kIE5mxnyzZKWDm/iE9ZUn3ZABONL5PQwPKN5FEJx1uZpHtvy9jxJDhiydzxZu0t+OSJT3jOw1Cg6sP95LXUqPrs4Q/k2y4jPIs6dbCpF9Oc/5VRVh1JDXQrlGp8LzlYrSwwLI83e1wUnIRXxmd3Uup8AIayjVs8I/tAGPF9vXEU6Wx2lnwiitN3sZ6vLqMQtA97m0yn4qaDSLN7YIj8IE4JJpLP47wEpmpuUOjIEkHAAeXIVbF9fz2ezV9eILKAeUCRwgl+NqV1NSZ4G3X1aux9tN5JnAVwptWEaGaH7zzlrogo4n88hhV4PrU8kswYegHdI+Metcd5oXUg3lQGkR03MR2N57jqHyCylA8O85YGPbgJ4jyHY6dCmWQA5FHq+OJXf7DvTeYBJg8ajqDPvovRjfSKQnP+bbi3+xt7Sn3y465XytPQBrE23DGGegFjmX1lgH63jN2o6g0/ICvNF+Usf0lzgorLAwAohAI=
+    local_dir: codedeploy
+    bucket: code-deploy.csye6225-fall2017-lakhmania.me
+    region: us-east-1
+    skip_cleanup: true
+    on:
+      all_branches: true
 
 notifications:
   email:
