@@ -39,7 +39,9 @@ deploy:
     bucket: code-deploy.csye6225-fall2017-kotichac.me
     region: us-east-1
     skip_cleanup: true
-    
+    on:
+      all_branches: true
+
 notifications:
   email:
     recipients:
