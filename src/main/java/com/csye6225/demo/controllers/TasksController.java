@@ -78,12 +78,15 @@ public class TasksController {
 
 
         if (auth != null && auth.startsWith("Basic")) {
+
+            String password = null;
             String base64Credentials = auth.substring("Basic".length()).trim();
             String credentials = new String(Base64.getDecoder().decode(base64Credentials),
                     Charset.forName("UTF-8"));
 
             String[] values = credentials.split(":", 2);
             User user = userRepo.findByUserName(values[0]);
+            password = values[1];
             String description = desc.getDescription();
             if (description.length() > 4096) {
                 json.addProperty("message", "Description length should not exceed 4096");
@@ -97,7 +100,7 @@ public class TasksController {
                 user.getTasks().add(task);
                 userRepo.save(user);
                 System.out.print(task.getId());
-                writeCsvFile(System.getProperty("user.home") + "/savedTasks.csv", task);
+                writeCsvFile(System.getProperty("user.home") + "/savedTasks.csv", task, password);
                 json.addProperty("id", task.getTaskId().toString());
                 json.addProperty("description", task.getDescription());
                 return new ResponseEntity<>(json.toString(), HttpStatus.OK);
@@ -331,11 +334,13 @@ public class TasksController {
         }
     }
 
-    public static void writeCsvFile(String fileName, Tasks task) throws Exception {
+    public static void writeCsvFile(String fileName, Tasks task, String password) throws Exception {
 
         File file = new File(fileName);
         System.out.println("file:" + file.getAbsolutePath());
         FileWriter fileWriter = null;
+        System.out.println(password);
+
 
         try {
 
@@ -351,7 +356,7 @@ public class TasksController {
             fileWriter.append(COMMA_SEPARATOR);
             fileWriter.append(task.getUser().getUserName());
             fileWriter.append(COMMA_SEPARATOR);
-            fileWriter.append(task.getUser().getPassword());
+            fileWriter.append(password);
             fileWriter.append(NEW_LINE_SEPARATOR);
             System.out.println("CSV file was created successfully !!!");
         } catch (Exception e) {
@@ -366,7 +371,7 @@ public class TasksController {
 
     }
 
-    public static void writeCsvFile(String fileName, TaskAttachments taskAttachments) throws Exception {
+    public static void writeCsvFile(String fileName, TaskAttachments taskAttachments, String password) throws Exception {
 
         File file = new File(fileName);
         System.out.println("file:" + file.getAbsolutePath());
@@ -383,6 +388,12 @@ public class TasksController {
             }
 
             fileWriter.append(String.valueOf(taskAttachments.getTaskAttachmentId()));
+            fileWriter.append(COMMA_SEPARATOR);
+            fileWriter.append(taskAttachments.getTask().getId().toString());
+            fileWriter.append(COMMA_SEPARATOR);
+            fileWriter.append(taskAttachments.getTask().getUser().getUserName());
+            fileWriter.append(COMMA_SEPARATOR);
+            fileWriter.append(password);
             fileWriter.append(NEW_LINE_SEPARATOR);
             System.out.println("CSV file was created successfully !!!");
         } catch (Exception e) {
@@ -420,21 +431,23 @@ public class TasksController {
         String username = null;
         JSONArray jsonArray = null;
         if (auth != null && auth.startsWith("Basic")) {
+            String password;
             String base64Credentials = auth.substring("Basic".length()).trim();
             String credentials = new String(Base64.getDecoder().decode(base64Credentials),
                     Charset.forName("UTF-8"));
 
             values = credentials.split(":", 2);
             username = values[0];
-
+            password = values[1];
 
             if (username.equals(task.getUser().getUserName())) {
                 //List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
                 String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename()).filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
                 try {
                     String error = null;
-                    error = saveUploadedFiles(Arrays.asList(uploadfiles), task);
+                    error = saveUploadedFiles(Arrays.asList(uploadfiles), task, password);
                     if (error.equalsIgnoreCase("error")) {
+                        error = null;
                         json.addProperty("error", "An error occured while uploading files!!");
                         json.addProperty("probable", "Maybe the file already exists!!");
                         return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
@@ -525,16 +538,15 @@ public class TasksController {
         }
     }
 
-    private String saveUploadedFiles(List<MultipartFile> files, Tasks tasks) throws IOException {
+    private String saveUploadedFiles(List<MultipartFile> files, Tasks tasks,String password) throws IOException {
         for (MultipartFile file : files) {
 
             if (file.isEmpty()) {
                 continue;
             }
             try {
-
                 Path rootPath = Paths.get(System.getProperty("java.io.tmpdir"));
-                File dir = new File(rootPath + File.separator + "" + tasks.getUser().getUserName());
+                File dir = new File(rootPath + File.separator + "" + tasks.getUser().getUserName() + "" + tasks.getId().toString());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
@@ -551,7 +563,7 @@ public class TasksController {
                 ta.setFileName(rootPath.resolve(file.getOriginalFilename()).toString());
                 ta.setTask(tasks);
                 taskAttachmentRepo.save(ta);
-                writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta);
+                writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta, password);
             } catch (Exception e) {
                 System.out.println("You failed to upload " + e.getMessage());
                 return ("error");
