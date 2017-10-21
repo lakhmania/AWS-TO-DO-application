@@ -60,44 +60,43 @@
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
-        <hashTree>
-          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
-            <boolProp name="ResultCollector.error_logging">false</boolProp>
-            <objProp>
-              <name>saveConfig</name>
-              <value class="SampleSaveConfiguration">
-                <time>true</time>
-                <latency>true</latency>
-                <timestamp>true</timestamp>
-                <success>true</success>
-                <label>true</label>
-                <code>true</code>
-                <message>true</message>
-                <threadName>true</threadName>
-                <dataType>true</dataType>
-                <encoding>false</encoding>
-                <assertions>true</assertions>
-                <subresults>true</subresults>
-                <responseData>false</responseData>
-                <samplerData>false</samplerData>
-                <xml>false</xml>
-                <fieldNames>true</fieldNames>
-                <responseHeaders>false</responseHeaders>
-                <requestHeaders>false</requestHeaders>
-                <responseDataOnError>false</responseDataOnError>
-                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-                <assertionsResultsToSave>0</assertionsResultsToSave>
-                <bytes>true</bytes>
-                <sentBytes>true</sentBytes>
-                <threadCounts>true</threadCounts>
-                <idleTime>true</idleTime>
-                <connectTime>true</connectTime>
-              </value>
-            </objProp>
-            <stringProp name="filename"></stringProp>
-          </ResultCollector>
-          <hashTree/>
-        </hashTree>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="TaskCreation" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -143,7 +142,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">/home/chintankoticha/users.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/users.csv</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -254,7 +253,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -342,13 +341,13 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/home/chintankoticha/CSYE6225/create-csye6225-cloudformation-stack.sh" elementType="HTTPFileArg">
-                <stringProp name="File.path">/home/chintankoticha/CSYE6225/create-csye6225-cloudformation-stack.sh</stringProp>
+              <elementProp name="/home/apoorva/csye6225/csye6225-fall2017/infrastructure/aws/scripts/launch-ec2-instance.sh" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/apoorva/csye6225/csye6225-fall2017/infrastructure/aws/scripts/launch-ec2-instance.sh</stringProp>
                 <stringProp name="File.paramname">files</stringProp>
                 <stringProp name="File.mimetype">text/x-shellscript</stringProp>
               </elementProp>
-              <elementProp name="/home/chintankoticha/CSYE6225/delete-csye6225-cloudformation-stack.sh" elementType="HTTPFileArg">
-                <stringProp name="File.path">/home/chintankoticha/CSYE6225/delete-csye6225-cloudformation-stack.sh</stringProp>
+              <elementProp name="/home/apoorva/csye6225/csye6225-fall2017/infrastructure/aws/scripts/terminate-ec2-instance.sh" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/apoorva/csye6225/csye6225-fall2017/infrastructure/aws/scripts/terminate-ec2-instance.sh</stringProp>
                 <stringProp name="File.paramname">files</stringProp>
                 <stringProp name="File.mimetype">text/x-shellscript</stringProp>
               </elementProp>
@@ -373,7 +372,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -470,7 +469,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-            <stringProp name="filename">/home/chintankoticha/users.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/users.csv</stringProp>
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -567,7 +566,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-            <stringProp name="filename">/home/chintankoticha/savedTasksAttachments.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/savedTasksAttachments.csv</stringProp>
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskAttachmentId,taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -663,7 +662,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -759,7 +758,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+            <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
