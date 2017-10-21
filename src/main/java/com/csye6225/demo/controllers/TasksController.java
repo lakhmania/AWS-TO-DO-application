@@ -439,6 +439,7 @@ public class TasksController {
                     String error = null;
                     error = saveUploadedFiles(Arrays.asList(uploadfiles), task, password);
                     if (error.equalsIgnoreCase("error")) {
+                        error = null;
                         json.addProperty("error", "An error occured while uploading files!!");
                         json.addProperty("probable", "Maybe the file already exists!!");
                         return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
@@ -537,7 +538,7 @@ public class TasksController {
             }
             try {
                 Path rootPath = Paths.get(System.getProperty("java.io.tmpdir"));
-                File dir = new File(rootPath + File.separator + "" + tasks.getUser().getUserName());
+                File dir = new File(rootPath + File.separator + "" + tasks.getUser().getUserName() + "" + tasks.getId().toString());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
