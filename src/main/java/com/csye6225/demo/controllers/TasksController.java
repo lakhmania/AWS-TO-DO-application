@@ -139,7 +139,15 @@ public class TasksController {
                     Charset.forName("UTF-8"));
 
             String[] values = credentials.split(":", 2);
-            UUID uid = UUID.fromString(id);
+            UUID  uid  = null ;
+            try {
+                 uid = UUID.fromString(id);
+            }
+            catch (Exception e)
+            {
+                json.addProperty("message", "Task Id malformed");
+                return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+            }
             Tasks task = taskRepo.findByTaskId(uid);
             if (task == null) {
                 json.addProperty("message", "Task Id not found");
