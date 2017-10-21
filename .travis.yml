@@ -30,6 +30,16 @@ after_success:
 before_deploy:
   -cd ..
 
+deploy:
+  - provider: s3
+    access_key_id: AKIAI6ELGYP32U64QNPA
+    secret_access_key:
+      secure: u7xsbZBd5ZhVH762+iNQhD2VUXi9mHei8PLzmUec9AKB0PvzpTUU02rnCjV19FRb7iOgOmBL3+g/9vy8ZsGlZ/n9FMof6j+/1D09npoadIjuF3ETyhl+vsgqrPJTCmqAs3hKtBV7vbjEgfl3fc22OP11kMpBm7nAmRA/ePNH1L8h9aCG0k1TH4B/sR2h9UqrRr6xzHYR/wqrJQXAG0bPWTYDwPNYD5OC2YkZHJTnuMRKO+vuQhNWLBPAqr8UdRbPge7k/SWoQl9MfuqKIDBwHDXyq5VKIyNSqbwrnCRpTvwxnRlck/zrQGdn8lZIktMCsvvhKHLCPsw6cBz6MtsD7wJedookt/ajWo0dvfXtpvO1MUyXTunnnz7ajEbk0IgjQa7bYA/ZysnaVwOyGp/TryJMRxamBoTbq8Az9za4L+6sbGFRNSg3/EbP3ykDw+4mdcnHCJsOgziB0wRELoV8RgTvbfJC3KjNRfZYxjSMegPs2Rj5+JDLjEju8FjCeRzKDj1YwWQfzYXScgC+lGcKDmmTHxQHki7hgx9G9/oSXPy322BegGzy4CwiJKRuuAKlrD8AHNG3pkcslTw9GVb5Rm5RUDAlzY0IL0HvlkgklZqRQu+XNClg/NamisOzUa6H4a6uchCe58xGVt/oOQLFhhZ4UH2LQbAg1lPE4A3jkdU=
+    local_dir: codedeploy
+    bucket: code-deploy.csye6225-fall2017-kotichac.me
+    region: us-east-1
+    skip_cleanup: true
+    
 notifications:
   email:
     recipients:
