@@ -1,54 +1,67 @@
-language: java
-jdk:
-  - oraclejdk8
+  language: java
+  jdk:
+    - oraclejdk8
 
-env:
-  - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
+  env:
+    - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
 
-services:
-  - mysql
+  services:
+    - mysql
 
-sudo: false
-install: true
+  sudo: false
+  install: true
 
-script:
-  - ./gradlew build
-  - ./gradlew war
-  - ./gradlew test --info
+  script:
+    - ./gradlew build
+    - ./gradlew war
+    - ./gradlew test --info
 
-after_success:
-  - mkdir codedeploy
-  - zip -r csye6225-webapp.zip build/libs/ROOT.war appspec.yml
-  - ls -al
-  - mv csye6225-webapp.zip codedeploy/
-  - ls -al
-  - pwd
-  - cd codedeploy
-  - ls -al
-  - pwd
+  after_success:
+    - mkdir codedeploy
+    - zip -r csye6225-webapp.zip build/libs/ROOT.war appspec.yml
+    - ls -al
+    - mv csye6225-webapp.zip codedeploy/
+    - ls -al
+    - pwd
+    - cd codedeploy
+    - ls -al
+    - pwd
 
-before_deploy:
-  - cd ..
+  before_deploy:
+    - cd ..
 
-deploy:
-  - provider: s3
-    access_key_id: AKIAI6ELGYP32U64QNPA
-    secret_access_key:
-      secure: u7xsbZBd5ZhVH762+iNQhD2VUXi9mHei8PLzmUec9AKB0PvzpTUU02rnCjV19FRb7iOgOmBL3+g/9vy8ZsGlZ/n9FMof6j+/1D09npoadIjuF3ETyhl+vsgqrPJTCmqAs3hKtBV7vbjEgfl3fc22OP11kMpBm7nAmRA/ePNH1L8h9aCG0k1TH4B/sR2h9UqrRr6xzHYR/wqrJQXAG0bPWTYDwPNYD5OC2YkZHJTnuMRKO+vuQhNWLBPAqr8UdRbPge7k/SWoQl9MfuqKIDBwHDXyq5VKIyNSqbwrnCRpTvwxnRlck/zrQGdn8lZIktMCsvvhKHLCPsw6cBz6MtsD7wJedookt/ajWo0dvfXtpvO1MUyXTunnnz7ajEbk0IgjQa7bYA/ZysnaVwOyGp/TryJMRxamBoTbq8Az9za4L+6sbGFRNSg3/EbP3ykDw+4mdcnHCJsOgziB0wRELoV8RgTvbfJC3KjNRfZYxjSMegPs2Rj5+JDLjEju8FjCeRzKDj1YwWQfzYXScgC+lGcKDmmTHxQHki7hgx9G9/oSXPy322BegGzy4CwiJKRuuAKlrD8AHNG3pkcslTw9GVb5Rm5RUDAlzY0IL0HvlkgklZqRQu+XNClg/NamisOzUa6H4a6uchCe58xGVt/oOQLFhhZ4UH2LQbAg1lPE4A3jkdU=
-    local_dir: codedeploy
-    bucket: code-deploy.csye6225-fall2017-kotichac.me
-    region: us-east-1
-    skip_cleanup: true
-    on:
-      all_branches: true
+  deploy:
+    - provider: s3
+      access_key_id: AKIAI6ELGYP32U64QNPA
+      secret_access_key:
+        secure: u7xsbZBd5ZhVH762+iNQhD2VUXi9mHei8PLzmUec9AKB0PvzpTUU02rnCjV19FRb7iOgOmBL3+g/9vy8ZsGlZ/n9FMof6j+/1D09npoadIjuF3ETyhl+vsgqrPJTCmqAs3hKtBV7vbjEgfl3fc22OP11kMpBm7nAmRA/ePNH1L8h9aCG0k1TH4B/sR2h9UqrRr6xzHYR/wqrJQXAG0bPWTYDwPNYD5OC2YkZHJTnuMRKO+vuQhNWLBPAqr8UdRbPge7k/SWoQl9MfuqKIDBwHDXyq5VKIyNSqbwrnCRpTvwxnRlck/zrQGdn8lZIktMCsvvhKHLCPsw6cBz6MtsD7wJedookt/ajWo0dvfXtpvO1MUyXTunnnz7ajEbk0IgjQa7bYA/ZysnaVwOyGp/TryJMRxamBoTbq8Az9za4L+6sbGFRNSg3/EbP3ykDw+4mdcnHCJsOgziB0wRELoV8RgTvbfJC3KjNRfZYxjSMegPs2Rj5+JDLjEju8FjCeRzKDj1YwWQfzYXScgC+lGcKDmmTHxQHki7hgx9G9/oSXPy322BegGzy4CwiJKRuuAKlrD8AHNG3pkcslTw9GVb5Rm5RUDAlzY0IL0HvlkgklZqRQu+XNClg/NamisOzUa6H4a6uchCe58xGVt/oOQLFhhZ4UH2LQbAg1lPE4A3jkdU=
+      local_dir: codedeploy
+      bucket: code-deploy.csye6225-fall2017-kotichac.me
+      region: us-east-1
+      skip_cleanup: true
+      on:
+        all_branches: true
+    - provider: codedeploy
+      access_key_id: AKIAI6ELGYP32U64QNPA
+      bucket: code-deploy.csye6225.com
+      key: csye6225-webapp.zip
+      bundle_type: zip
+      application: csye6225-webapp
+      deployment_group: csye6225-webapp
+      region: us-east-1
+      secret_access_key:
+        secure: u7xsbZBd5ZhVH762+iNQhD2VUXi9mHei8PLzmUec9AKB0PvzpTUU02rnCjV19FRb7iOgOmBL3+g/9vy8ZsGlZ/n9FMof6j+/1D09npoadIjuF3ETyhl+vsgqrPJTCmqAs3hKtBV7vbjEgfl3fc22OP11kMpBm7nAmRA/ePNH1L8h9aCG0k1TH4B/sR2h9UqrRr6xzHYR/wqrJQXAG0bPWTYDwPNYD5OC2YkZHJTnuMRKO+vuQhNWLBPAqr8UdRbPge7k/SWoQl9MfuqKIDBwHDXyq5VKIyNSqbwrnCRpTvwxnRlck/zrQGdn8lZIktMCsvvhKHLCPsw6cBz6MtsD7wJedookt/ajWo0dvfXtpvO1MUyXTunnnz7ajEbk0IgjQa7bYA/ZysnaVwOyGp/TryJMRxamBoTbq8Az9za4L+6sbGFRNSg3/EbP3ykDw+4mdcnHCJsOgziB0wRELoV8RgTvbfJC3KjNRfZYxjSMegPs2Rj5+JDLjEju8FjCeRzKDj1YwWQfzYXScgC+lGcKDmmTHxQHki7hgx9G9/oSXPy322BegGzy4CwiJKRuuAKlrD8AHNG3pkcslTw9GVb5Rm5RUDAlzY0IL0HvlkgklZqRQu+XNClg/NamisOzUa6H4a6uchCe58xGVt/oOQLFhhZ4UH2LQbAg1lPE4A3jkdU=
+      wait-until-deployed: true
+      on:
+        all_branches: true
 
-notifications:
-  email:
-    recipients:
-    - koticha.c@husky.neu.edu
-    - merchant.n@husky.neu.edu
-    - lalwani.n@husky.neu.edu
-    - lakhmani.a@husky.neu.edu
+  notifications:
+    email:
+      recipients:
+      - koticha.c@husky.neu.edu
+      - merchant.n@husky.neu.edu
+      - lalwani.n@husky.neu.edu
+      - lakhmani.a@husky.neu.edu
 
-    on_success: always
-    on_failure: always 
+      on_success: always
+      on_failure: always
