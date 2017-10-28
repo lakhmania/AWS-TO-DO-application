@@ -43,7 +43,7 @@
         all_branches: true
     - provider: codedeploy
       access_key_id: AKIAI6ELGYP32U64QNPA
-      bucket: code-deploy.csye6225.com
+      bucket: code-deploy.csye6225-fall2017-kotichac.me
       key: csye6225-webapp.zip
       bundle_type: zip
       application: csye6225-webapp
