@@ -64,6 +64,14 @@
       },
       "S3BucketName":{  
          "Type":"String"
+      },
+      "TagKey": {
+
+	 "Type": "String"
+      },
+      "TagValue": {
+
+	 "Type": "String"
       }
    },
    "Resources":{  
@@ -99,12 +107,11 @@
                   }
                }
             ],
-            "Tags":[  
-               {  
-                  "Key":"name",
-                  "Value":"csye6225"
-               }
-            ],
+            "Tags" : [{
+		"Key" : {"Ref" : "TagKey"},
+		"Value" : {"Ref" : "TagValue"}
+
+		}],
             "UserData":{  
                "Fn::Base64":{  
                   "Fn::Join":[  
@@ -115,7 +122,17 @@
                         "sudo apt install default-jre --yes\n",
                         "java -version\n",
                         "sudo apt-get install tomcat8 --yes\n",
-                        "sudo service tomcat8 restart\n"
+                        "sudo service tomcat8 restart\n",
+			"sudo apt-get update\n",
+			"sudo apt-get install ruby --yes\n",
+			"sudo apt-get install wget --yes\n",
+			"cd /home/ubuntu\n",
+			"pwd\n",
+			"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+			"chmod +x ./install\n",
+			"sudo ./install auto\n",
+			"sudo service codedeploy-agent start\n",
+			"sudo service codedeploy-agent status\n"
                      ]
                   ]
                }
@@ -149,6 +166,12 @@
                      "IpProtocol":"tcp",
                      "FromPort":"443",
                      "ToPort":"443",
+                     "CidrIp":"0.0.0.0/0"
+                  },
+		  {  
+                     "IpProtocol":"tcp",
+                     "FromPort":"8080",
+                     "ToPort":"8080",
                      "CidrIp":"0.0.0.0/0"
                   }
                ]
