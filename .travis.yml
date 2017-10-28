@@ -15,8 +15,6 @@ script:
   - ./gradlew build
   - ./gradlew war
   - ./gradlew test --info
-
-after_success:
   - mkdir codedeploy
   - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
   - ls -al
@@ -26,31 +24,29 @@ after_success:
   - cd codedeploy
   - ls -al
   - pwd
-
-before_deploy:
   - cd ..
 
 deploy:
   - provider: s3
-    access_key_id: AKIAILBLMFW5N62UVCEQ
+    access_key_id: AKIAJXHQE5RRLD4XTLBA
     secret_access_key:
-      secure: mFZsSFhsIldkQmhA95kbUvEblyj/YuQR6iczDeWhwVyXi7DYJqsUcecz0F3RTe7uehq19KeIio6AQkC5OLQpjLJzxAYed7s4/VfGMyiia7nV56nk7qHY+bEcdPClR1/zIz3M2CU/x2/na3bQzz5UD0lNtwrIs0HP314jZgydXar3KQ1pFq+5b4O5+Z7s5hzNEp+HcmXZgr+M0Hg5KoqRUFpc1F6zmXTUumzCe/ab9aOm02DhyFUIWYSvsl8fgbNWcbA30wwO39bUotobSbYdAqx5hIL+7eifUNBvKU0IzGTLou3hlVaRh6XVrpVa7H3Q19s7K7wIuDhZFaXnAGmLq9Xn0gp3zAjGwpui2J1EFzob1JuaF4EtoMtFL0+0cr+9syFxN52MH5aWhPVGAdf3b0u1ISpqOW9A1zfDeLlr9iU93m2/4BhxQy5cHTdlybpYYcPreU6tzrrfMSi/5lVeXBn5sEIG83kUP78TmmAg2BJOSCSYWtkNPcMgMXbr/L0GVFXXjOyWFpcehZ5wPT5wdN4K7wHj2UuLbQStO5+KM3OfMqpu8cwjFWYEaJRPVZrGgnrURXrFJkJKNwV0jQMRhFkuHnmoETQet7WXA9ar/6FIH8AV0UfVUDz5J+bcj+8gEDwuonPuxb5PihDPLUp3bJSYIHn1cfRuLvnN9OaM4V8=
+      secure: pHnt2fe05shvPMrnNETjhwrcxybHefMsOzaiay9EcNuGdiLjA+e6Z2RWNp4SLQTeqkfV9mBtbJl++qstkeHDLAxqztZzHFrLEKOHxTj7hoR/GHFnUnBdmBHlhrk72Z0K4S/Ymk26EZ1WZtzY7qqrdyhPY90tibydXDdYA7h7cCWXpmO3gM2QHK+cToxo4Fc6JSxFp55toVetClcc1w3JgN+HY1Uwpq9SZ/ezwyuxPX17bio9vFkXWlQ6DA1lt13Ssmg4CgITNhq+/2hiG3tuM9KYUwjD1i24rEBkWxydNgJDwWUR+dF0cnQZwiiLoL55sNPRgs0SsSZG1DsA3W/tWrLyztdATf4swHkajd/bTIVSQ1w3zxK/pMOaD7ASFXO9ngXieFpC4sEkTHu1a5ipfdiP+WnY9KH6Bi2Rx99M5N2vmCiMaYIJ9xLeOPZRIpHtYONWqERS1hAbyI3wsr25A/ENMVNwe730WFnivyfWEv2tm0v4yt2EuOPqZjR51O2/lkf3VyZvfxNygL9vqdXMRzTMRsSt0KPycnl1AucI7Nm8ZdtuYDgCLbNy35B+RDZQq6KFCoL2o4XE0Zb1LU7dlKqD86bkIkhw1TJPR3+NLyTU5LIUqrNfxZUsd6dITl3KtwTey2lB14cnaosvznUeAXqy8JeccLZiriJcd5J4A8o=
     local_dir: codedeploy
-    bucket: code-deploy.csye6225-fall2017-lakhmania.me
+    bucket: code-deploy.csye6225-fall2017-merchantn.me
     region: us-east-1
     skip_cleanup: true
     on:
       all_branches: true
   - provider: codedeploy
-    access_key_id: AKIAILBLMFW5N62UVCEQ
-    bucket: code-deploy.csye6225-fall2017-lakhmania.me
+    access_key_id: AKIAJXHQE5RRLD4XTLBA
+    bucket: code-deploy.csye6225-fall2017-merchantn.me
     key: csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: csye6225-webapp
     deployment_group: csye6225-webapp
     region: us-east-1
     secret_access_key:
-      secure: mFZsSFhsIldkQmhA95kbUvEblyj/YuQR6iczDeWhwVyXi7DYJqsUcecz0F3RTe7uehq19KeIio6AQkC5OLQpjLJzxAYed7s4/VfGMyiia7nV56nk7qHY+bEcdPClR1/zIz3M2CU/x2/na3bQzz5UD0lNtwrIs0HP314jZgydXar3KQ1pFq+5b4O5+Z7s5hzNEp+HcmXZgr+M0Hg5KoqRUFpc1F6zmXTUumzCe/ab9aOm02DhyFUIWYSvsl8fgbNWcbA30wwO39bUotobSbYdAqx5hIL+7eifUNBvKU0IzGTLou3hlVaRh6XVrpVa7H3Q19s7K7wIuDhZFaXnAGmLq9Xn0gp3zAjGwpui2J1EFzob1JuaF4EtoMtFL0+0cr+9syFxN52MH5aWhPVGAdf3b0u1ISpqOW9A1zfDeLlr9iU93m2/4BhxQy5cHTdlybpYYcPreU6tzrrfMSi/5lVeXBn5sEIG83kUP78TmmAg2BJOSCSYWtkNPcMgMXbr/L0GVFXXjOyWFpcehZ5wPT5wdN4K7wHj2UuLbQStO5+KM3OfMqpu8cwjFWYEaJRPVZrGgnrURXrFJkJKNwV0jQMRhFkuHnmoETQet7WXA9ar/6FIH8AV0UfVUDz5J+bcj+8gEDwuonPuxb5PihDPLUp3bJSYIHn1cfRuLvnN9OaM4V8=
+      secure: pHnt2fe05shvPMrnNETjhwrcxybHefMsOzaiay9EcNuGdiLjA+e6Z2RWNp4SLQTeqkfV9mBtbJl++qstkeHDLAxqztZzHFrLEKOHxTj7hoR/GHFnUnBdmBHlhrk72Z0K4S/Ymk26EZ1WZtzY7qqrdyhPY90tibydXDdYA7h7cCWXpmO3gM2QHK+cToxo4Fc6JSxFp55toVetClcc1w3JgN+HY1Uwpq9SZ/ezwyuxPX17bio9vFkXWlQ6DA1lt13Ssmg4CgITNhq+/2hiG3tuM9KYUwjD1i24rEBkWxydNgJDwWUR+dF0cnQZwiiLoL55sNPRgs0SsSZG1DsA3W/tWrLyztdATf4swHkajd/bTIVSQ1w3zxK/pMOaD7ASFXO9ngXieFpC4sEkTHu1a5ipfdiP+WnY9KH6Bi2Rx99M5N2vmCiMaYIJ9xLeOPZRIpHtYONWqERS1hAbyI3wsr25A/ENMVNwe730WFnivyfWEv2tm0v4yt2EuOPqZjR51O2/lkf3VyZvfxNygL9vqdXMRzTMRsSt0KPycnl1AucI7Nm8ZdtuYDgCLbNy35B+RDZQq6KFCoL2o4XE0Zb1LU7dlKqD86bkIkhw1TJPR3+NLyTU5LIUqrNfxZUsd6dITl3KtwTey2lB14cnaosvznUeAXqy8JeccLZiriJcd5J4A8o=
     wait-until-deployed: true
     on:
       all_branches: true
