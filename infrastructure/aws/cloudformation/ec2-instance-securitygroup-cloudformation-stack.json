@@ -64,6 +64,14 @@
 		},
 		"S3BucketName": {
 			"Type": "String"
+		},
+		"TagKey": {
+
+			"Type": "String"
+		},
+		"TagValue": {
+
+			"Type": "String"
 		}
 	},
 	"Resources": {
@@ -96,8 +104,13 @@
 					}
 				}],
 				"Tags": [{
-					"Key": "name",
-					"Value": "csye6225"
+					"Key": {
+						"Ref": "TagKey"
+					},
+					"Value": {
+						"Ref": "TagValue"
+					}
+
 				}],
 				"UserData": {
 					"Fn::Base64": {
@@ -105,8 +118,20 @@
 							"", [
 								"#!bin/bash\n",
 								"sudo apt-get update\n",
-								"sudo apt-get install default-jre --yes\n",
-								"java -version"
+								"sudo apt install default-jre --yes\n",
+								"java -version\n",
+								"sudo apt-get install tomcat8 --yes\n",
+								"sudo service tomcat8 restart\n",
+								"sudo apt-get update\n",
+								"sudo apt-get install ruby --yes\n",
+								"sudo apt-get install wget --yes\n",
+								"cd /home/ubuntu\n",
+								"pwd\n",
+								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+								"chmod +x ./install\n",
+								"sudo ./install auto\n",
+								"sudo service codedeploy-agent start\n",
+								"sudo service codedeploy-agent status\n"
 							]
 						]
 					}
@@ -140,8 +165,120 @@
 						"FromPort": "443",
 						"ToPort": "443",
 						"CidrIp": "0.0.0.0/0"
+					},
+					{
+						"IpProtocol": "tcp",
+						"FromPort": "8080",
+						"ToPort": "8080",
+						"CidrIp": "0.0.0.0/0"
 					}
 				]
+			}
+		},
+		"RDSInstance": {
+			"Type": "AWS::RDS::DBInstance",
+			"Properties": {
+				"AllocatedStorage": {
+					"Ref": "AllocatedStorage"
+				},
+				"DBInstanceClass": {
+					"Ref": "DBInstanceClass"
+				},
+				"Engine": {
+					"Ref": "Engine"
+				},
+				"EngineVersion": {
+					"Ref": "EngineVersion"
+				},
+				"MultiAZ": "false",
+				"DBInstanceIdentifier": {
+					"Ref": "DBInstanceIdentifier"
+				},
+				"StorageType": "gp2",
+				"MasterUsername": {
+					"Ref": "DBUser"
+				},
+				"MasterUserPassword": {
+					"Ref": "DBPassword"
+				},
+				"DBSubnetGroupName": {
+					"Ref": "MyDBSubnetGroup"
+				},
+				"PubliclyAccessible": "false",
+				"DBName": {
+					"Ref": "DBName"
+				},
+				"VPCSecurityGroups": [{
+					"Fn::GetAtt": [
+						"RDSSecurityGroup",
+						"GroupId"
+					]
+				}]
+			}
+		},
+		"RDSSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Open database for access",
+				"GroupName": {
+					"Ref": "RDSGroupName"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "3306",
+					"ToPort": "3306",
+					"SourceSecurityGroupId": {
+						"Fn::GetAtt": [
+							"WebServerSecurityGroup",
+							"GroupId"
+						]
+					}
+				}]
+			}
+		},
+		"MyDBSubnetGroup": {
+			"Type": "AWS::RDS::DBSubnetGroup",
+			"Properties": {
+				"DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
+				"SubnetIds": [{
+						"Ref": "SubnetId"
+					},
+					{
+						"Ref": "SubnetId2"
+					}
+				]
+			}
+		},
+		"MyDynamoDBTable": {
+			"Type": "AWS::DynamoDB::Table",
+			"Properties": {
+				"TableName": {
+					"Ref": "TableName"
+				},
+				"AttributeDefinitions": [{
+					"AttributeName": {
+						"Ref": "PrimaryKeyName"
+					},
+					"AttributeType": "S"
+				}],
+				"KeySchema": [{
+					"AttributeName": {
+						"Ref": "PrimaryKeyName"
+					},
+					"KeyType": "HASH"
+				}],
+				"ProvisionedThroughput": {
+					"ReadCapacityUnits": "5",
+					"WriteCapacityUnits": "5"
+				}
+			}
+		},
+		"S3Bucket": {
+			"Type": "AWS::S3::Bucket",
+			"Properties": {
+				"BucketName": {
+					"Ref": "S3BucketName"
+				}
 			}
 		},
 		"ResourceRecords": {

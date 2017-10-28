@@ -539,7 +539,11 @@ public class TasksController {
     }
 
     private String saveUploadedFiles(List<MultipartFile> files, Tasks tasks,String password) throws IOException {
+        UploadAttachmentToS3Bucket uploadToS3 = new UploadAttachmentToS3Bucket();
+
         for (MultipartFile file : files) {
+
+            uploadToS3.uploadFile(file);
 
             if (file.isEmpty()) {
                 continue;
