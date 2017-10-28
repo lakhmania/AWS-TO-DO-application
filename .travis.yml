@@ -12,8 +12,48 @@ sudo: false
 install: true
 
 script:
+  - ./gradlew build
   - ./gradlew war
   - ./gradlew test --info
+
+after_success:
+  - mkdir codedeploy
+  - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
+  - ls -al
+  - mv csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip codedeploy/
+  - ls -al
+  - pwd
+  - cd codedeploy
+  - ls -al
+  - pwd
+
+before_deploy:
+  - cd ..
+
+deploy:
+  - provider: s3
+    access_key_id: AKIAILBLMFW5N62UVCEQ
+    secret_access_key:
+      secure: mFZsSFhsIldkQmhA95kbUvEblyj/YuQR6iczDeWhwVyXi7DYJqsUcecz0F3RTe7uehq19KeIio6AQkC5OLQpjLJzxAYed7s4/VfGMyiia7nV56nk7qHY+bEcdPClR1/zIz3M2CU/x2/na3bQzz5UD0lNtwrIs0HP314jZgydXar3KQ1pFq+5b4O5+Z7s5hzNEp+HcmXZgr+M0Hg5KoqRUFpc1F6zmXTUumzCe/ab9aOm02DhyFUIWYSvsl8fgbNWcbA30wwO39bUotobSbYdAqx5hIL+7eifUNBvKU0IzGTLou3hlVaRh6XVrpVa7H3Q19s7K7wIuDhZFaXnAGmLq9Xn0gp3zAjGwpui2J1EFzob1JuaF4EtoMtFL0+0cr+9syFxN52MH5aWhPVGAdf3b0u1ISpqOW9A1zfDeLlr9iU93m2/4BhxQy5cHTdlybpYYcPreU6tzrrfMSi/5lVeXBn5sEIG83kUP78TmmAg2BJOSCSYWtkNPcMgMXbr/L0GVFXXjOyWFpcehZ5wPT5wdN4K7wHj2UuLbQStO5+KM3OfMqpu8cwjFWYEaJRPVZrGgnrURXrFJkJKNwV0jQMRhFkuHnmoETQet7WXA9ar/6FIH8AV0UfVUDz5J+bcj+8gEDwuonPuxb5PihDPLUp3bJSYIHn1cfRuLvnN9OaM4V8=
+    local_dir: codedeploy
+    bucket: code-deploy.csye6225-fall2017-lakhmania.me
+    region: us-east-1
+    skip_cleanup: true
+    on:
+      all_branches: true
+  - provider: codedeploy
+    access_key_id: AKIAILBLMFW5N62UVCEQ
+    bucket: code-deploy.csye6225-fall2017-lakhmania.me
+    key: csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip
+    bundle_type: zip
+    application: csye6225-webapp
+    deployment_group: csye6225-webapp
+    region: us-east-1
+    secret_access_key:
+      secure: mFZsSFhsIldkQmhA95kbUvEblyj/YuQR6iczDeWhwVyXi7DYJqsUcecz0F3RTe7uehq19KeIio6AQkC5OLQpjLJzxAYed7s4/VfGMyiia7nV56nk7qHY+bEcdPClR1/zIz3M2CU/x2/na3bQzz5UD0lNtwrIs0HP314jZgydXar3KQ1pFq+5b4O5+Z7s5hzNEp+HcmXZgr+M0Hg5KoqRUFpc1F6zmXTUumzCe/ab9aOm02DhyFUIWYSvsl8fgbNWcbA30wwO39bUotobSbYdAqx5hIL+7eifUNBvKU0IzGTLou3hlVaRh6XVrpVa7H3Q19s7K7wIuDhZFaXnAGmLq9Xn0gp3zAjGwpui2J1EFzob1JuaF4EtoMtFL0+0cr+9syFxN52MH5aWhPVGAdf3b0u1ISpqOW9A1zfDeLlr9iU93m2/4BhxQy5cHTdlybpYYcPreU6tzrrfMSi/5lVeXBn5sEIG83kUP78TmmAg2BJOSCSYWtkNPcMgMXbr/L0GVFXXjOyWFpcehZ5wPT5wdN4K7wHj2UuLbQStO5+KM3OfMqpu8cwjFWYEaJRPVZrGgnrURXrFJkJKNwV0jQMRhFkuHnmoETQet7WXA9ar/6FIH8AV0UfVUDz5J+bcj+8gEDwuonPuxb5PihDPLUp3bJSYIHn1cfRuLvnN9OaM4V8=
+    wait-until-deployed: true
+    on:
+      all_branches: true
 
 notifications:
   email:
