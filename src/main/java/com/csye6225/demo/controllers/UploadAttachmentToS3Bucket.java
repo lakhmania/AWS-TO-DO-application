@@ -19,10 +19,18 @@ public class UploadAttachmentToS3Bucket {
     //private static String filename = "/home/apoorva/csye6225/scripts_backup/create-csye6225-cloudformation-stack.sh";
 
     public void uploadFile(MultipartFile multipartfile){
+
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
         //AmazonS3 s3Client = new AmazonS3Client(new ProfileCredentialsProvider());
+
+
+        //AmazonS3 s3Client = new AmazonS3Client(new ProfileCredentialsProvider());
+        //AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
+                //standard()
+                //.withCredentials(new InstanceProfileCredentialsProvider(false))
+                //.build();
 
         try{
 

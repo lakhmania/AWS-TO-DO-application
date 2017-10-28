@@ -28,25 +28,23 @@ script:
 
 deploy:
   - provider: s3
-    access_key_id: AKIAJXHQE5RRLD4XTLBA
-    secret_access_key:
-      secure: pHnt2fe05shvPMrnNETjhwrcxybHefMsOzaiay9EcNuGdiLjA+e6Z2RWNp4SLQTeqkfV9mBtbJl++qstkeHDLAxqztZzHFrLEKOHxTj7hoR/GHFnUnBdmBHlhrk72Z0K4S/Ymk26EZ1WZtzY7qqrdyhPY90tibydXDdYA7h7cCWXpmO3gM2QHK+cToxo4Fc6JSxFp55toVetClcc1w3JgN+HY1Uwpq9SZ/ezwyuxPX17bio9vFkXWlQ6DA1lt13Ssmg4CgITNhq+/2hiG3tuM9KYUwjD1i24rEBkWxydNgJDwWUR+dF0cnQZwiiLoL55sNPRgs0SsSZG1DsA3W/tWrLyztdATf4swHkajd/bTIVSQ1w3zxK/pMOaD7ASFXO9ngXieFpC4sEkTHu1a5ipfdiP+WnY9KH6Bi2Rx99M5N2vmCiMaYIJ9xLeOPZRIpHtYONWqERS1hAbyI3wsr25A/ENMVNwe730WFnivyfWEv2tm0v4yt2EuOPqZjR51O2/lkf3VyZvfxNygL9vqdXMRzTMRsSt0KPycnl1AucI7Nm8ZdtuYDgCLbNy35B+RDZQq6KFCoL2o4XE0Zb1LU7dlKqD86bkIkhw1TJPR3+NLyTU5LIUqrNfxZUsd6dITl3KtwTey2lB14cnaosvznUeAXqy8JeccLZiriJcd5J4A8o=
+    access_key_id: $access_key_id
+    secret_access_key: $secret_access_key
     local_dir: codedeploy
-    bucket: code-deploy.csye6225-fall2017-merchantn.me
+    bucket: $bucket
     region: us-east-1
     skip_cleanup: true
     on:
       all_branches: true
   - provider: codedeploy
-    access_key_id: AKIAJXHQE5RRLD4XTLBA
-    bucket: code-deploy.csye6225-fall2017-merchantn.me
+    access_key_id: $access_key_id
+    bucket: $bucket
     key: csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: csye6225-webapp
     deployment_group: csye6225-webapp
     region: us-east-1
-    secret_access_key:
-      secure: pHnt2fe05shvPMrnNETjhwrcxybHefMsOzaiay9EcNuGdiLjA+e6Z2RWNp4SLQTeqkfV9mBtbJl++qstkeHDLAxqztZzHFrLEKOHxTj7hoR/GHFnUnBdmBHlhrk72Z0K4S/Ymk26EZ1WZtzY7qqrdyhPY90tibydXDdYA7h7cCWXpmO3gM2QHK+cToxo4Fc6JSxFp55toVetClcc1w3JgN+HY1Uwpq9SZ/ezwyuxPX17bio9vFkXWlQ6DA1lt13Ssmg4CgITNhq+/2hiG3tuM9KYUwjD1i24rEBkWxydNgJDwWUR+dF0cnQZwiiLoL55sNPRgs0SsSZG1DsA3W/tWrLyztdATf4swHkajd/bTIVSQ1w3zxK/pMOaD7ASFXO9ngXieFpC4sEkTHu1a5ipfdiP+WnY9KH6Bi2Rx99M5N2vmCiMaYIJ9xLeOPZRIpHtYONWqERS1hAbyI3wsr25A/ENMVNwe730WFnivyfWEv2tm0v4yt2EuOPqZjR51O2/lkf3VyZvfxNygL9vqdXMRzTMRsSt0KPycnl1AucI7Nm8ZdtuYDgCLbNy35B+RDZQq6KFCoL2o4XE0Zb1LU7dlKqD86bkIkhw1TJPR3+NLyTU5LIUqrNfxZUsd6dITl3KtwTey2lB14cnaosvznUeAXqy8JeccLZiriJcd5J4A8o=
+    secret_access_key: $secret_access_key
     wait-until-deployed: true
     on:
       all_branches: true
