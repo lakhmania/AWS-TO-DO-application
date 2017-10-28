@@ -20,9 +20,10 @@ public class UploadAttachmentToS3Bucket {
 
     public void uploadFile(MultipartFile multipartfile){
         //AmazonS3 s3Client = new AmazonS3Client(new ProfileCredentialsProvider());
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withCredentials(new InstanceProfileCredentialsProvider(false))
-                .build();
+        AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
+                //standard()
+                //.withCredentials(new InstanceProfileCredentialsProvider(false))
+                //.build();
         try{
 
             System.out.println("Uploading file to s3 bucket");
