@@ -1,0 +1,100 @@
+  {
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation Template for CSYE 6225 - Fall 2017 Travis Policies",
+    "Parameters": {
+      "TravisUploadToS3PolicyName": {
+        "Type": "String"
+      },
+      "TravisCodeDeployPolicyName": {
+        "Type": "String"
+      },
+      "Resource1": {
+        "Type": "String"
+      },
+      "Resource2": {
+        "Type": "String"
+      },
+      "Resource3": {
+        "Type": "String"
+      },
+      "Resource4": {
+        "Type": "String"
+      }
+    },
+    "Resources": {
+      "TravisUploadToS3Policy": {
+        "Type": "AWS::IAM::ManagedPolicy",
+        "Properties": {
+          "ManagedPolicyName": {
+            "Ref": "TravisUploadToS3PolicyName"
+          },
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:PutObject"
+                ],
+                "Resource": [
+                  "*"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "TravisCallCodeDeployPolicy": {
+        "Type": "AWS::IAM::ManagedPolicy",
+        "Properties": {
+          "ManagedPolicyName": {
+            "Ref": "TravisCodeDeployPolicyName"
+          },
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "codedeploy:RegisterApplicationRevision",
+                  "codedeploy:GetApplicationRevision"
+                ],
+                "Resource": [
+                  {
+                    "Ref": "Resource1"
+                  }
+                ]
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "codedeploy:CreateDeployment",
+                  "codedeploy:GetDeployment"
+                ],
+                "Resource": [
+                  "*"
+                ]
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "codedeploy:GetDeploymentConfig"
+                ],
+                "Resource": [
+                  {
+                    "Ref": "Resource2"
+                  },
+                  {
+                    "Ref": "Resource3"
+                  },
+                  {
+                    "Ref": "Resource4"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+    }
