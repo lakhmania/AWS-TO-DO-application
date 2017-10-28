@@ -12,7 +12,7 @@ import java.io.FileOutputStream;
 
 public class UploadAttachmentToS3Bucket {
 
-    private static String bucketName = "code-deploy.csye6225-fall2017-lakhmania.me";
+    private static String bucketName = "code-deploy.csye6225-fall2017-merchantn.me";
     //private static String keyName = "AKIAJBFCIXAWGLT7TFWA";
     //private static String filename = "/home/apoorva/csye6225/scripts_backup/create-csye6225-cloudformation-stack.sh";
 
