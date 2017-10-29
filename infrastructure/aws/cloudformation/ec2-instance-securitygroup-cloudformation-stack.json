@@ -26,7 +26,6 @@
 		"VpcId": {
 			"Type": "String"
 		},
-
 		"AllocatedStorage": {
 			"Type": "String"
 		},
@@ -64,7 +63,30 @@
 			"Type": "String"
 		},
 		"S3BucketName": {
-
+			"Type": "String"
+		},
+		"TagKey": {
+			"Type": "String"
+		},
+		"TagValue": {
+			"Type": "String"
+		},
+		"CodeDeployEC2ServiceRoleName": {
+			"Type": "String"
+		},
+		"CodeDeployEC2ServiceRoleService": {
+			"Type": "String"
+		},
+		"CodeDeployServiceRoleName": {
+			"Type": "String"
+		},
+		"CodeDeployServiceRoleService": {
+			"Type": "String"
+		},
+		"CodeDeployEC2S3PolicyName": {
+			"Type": "String"
+		},
+		"RDSConnectPolicyName": {
 			"Type": "String"
 		}
 	},
@@ -96,7 +118,60 @@
 						"VolumeSize": "16",
 						"VolumeType": "gp2"
 					}
-				}]
+				}],
+				"Tags": [{
+					"Key": {
+						"Ref": "TagKey"
+					},
+					"Value": {
+						"Ref": "TagValue"
+					}
+				}],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"", [
+								"#!bin/bash\n",
+								"sudo apt-get update\n",
+								"sudo apt install default-jre --yes\n",
+								"java -version\n",
+								"sudo apt-get install tomcat8 --yes\n",
+								"sudo service tomcat8 restart\n",
+								"sudo apt-get update\n",
+								"sudo apt-get install ruby --yes\n",
+								"sudo apt-get install wget --yes\n",
+								"cd /home/ubuntu\n",
+								"pwd\n",
+								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+								"chmod +x ./install\n",
+								"sudo ./install auto\n",
+								"sudo service codedeploy-agent start\n",
+								"sudo service codedeploy-agent status\n",
+								"echo '#!/bin/sh' >> /usr/share/tomcat8/bin/setenv.sh \n",
+								{
+									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql//${RDSInstance.Endpoint.Address}:3306/csye6225\"' >> /usr/share/tomcat8/bin/setenv.sh \n"
+								},
+								{
+									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=${DBUser}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
+								},
+								{
+									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=${DBPassword}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
+								},
+								{
+									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=${S3BucketName}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
+								},
+								"chmod +x /usr/share/tomcat8/bin/setenv.sh\n",
+								"chown tomcat8:tomcat8 /usr/share/tomcat8/bin/setenv.sh\n",
+								"chmod 777 -R /tmp\n",
+								"chmod 777 /var/lib/tomcat8 \n",
+								"chmod 777 /var/lib/tomcat8/webapps"
+							]
+						]
+					}
+				},
+				"IamInstanceProfile": {
+					"Ref": "CodeDeployEC2ServiceRoleInstanceProfile"
+				}
 			}
 		},
 		"WebServerSecurityGroup": {
@@ -125,6 +200,12 @@
 						"IpProtocol": "tcp",
 						"FromPort": "443",
 						"ToPort": "443",
+						"CidrIp": "0.0.0.0/0"
+					},
+					{
+						"IpProtocol": "tcp",
+						"FromPort": "8080",
+						"ToPort": "8080",
 						"CidrIp": "0.0.0.0/0"
 					}
 				]
@@ -164,7 +245,10 @@
 					"Ref": "DBName"
 				},
 				"VPCSecurityGroups": [{
-					"Fn::GetAtt": ["RDSSecurityGroup", "GroupId"]
+					"Fn::GetAtt": [
+						"RDSSecurityGroup",
+						"GroupId"
+					]
 				}]
 			}
 		},
@@ -180,7 +264,10 @@
 					"FromPort": "3306",
 					"ToPort": "3306",
 					"SourceSecurityGroupId": {
-						"Fn::GetAtt": ["WebServerSecurityGroup", "GroupId"]
+						"Fn::GetAtt": [
+							"WebServerSecurityGroup",
+							"GroupId"
+						]
 					}
 				}]
 			}
@@ -189,13 +276,21 @@
 			"Type": "AWS::RDS::DBSubnetGroup",
 			"Properties": {
 				"DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
-				"SubnetIds": [{"Ref": "SubnetId"}, {"Ref": "SubnetId2"}]
+				"SubnetIds": [{
+						"Ref": "SubnetId"
+					},
+					{
+						"Ref": "SubnetId2"
+					}
+				]
 			}
 		},
 		"MyDynamoDBTable": {
 			"Type": "AWS::DynamoDB::Table",
 			"Properties": {
-				"TableName": {"Ref": "TableName"},
+				"TableName": {
+					"Ref": "TableName"
+				},
 				"AttributeDefinitions": [{
 					"AttributeName": {
 						"Ref": "PrimaryKeyName"
@@ -217,7 +312,9 @@
 		"S3Bucket": {
 			"Type": "AWS::S3::Bucket",
 			"Properties": {
-				"BucketName": {"Ref": "S3BucketName"}
+				"BucketName": {
+					"Ref": "S3BucketName"
+				}
 			}
 		},
 		"ResourceRecords": {
@@ -237,6 +334,115 @@
 				}],
 				"TTL": "60",
 				"Type": "A"
+			}
+		},
+		"CodeDeployEC2ServiceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": {
+					"Ref": "CodeDeployEC2ServiceRoleName"
+				},
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": [{
+								"Ref": "CodeDeployEC2ServiceRoleService"
+							}]
+						},
+						"Action": [
+							"sts:AssumeRole"
+						]
+					}]
+				},
+				"ManagedPolicyArns": [{
+						"Ref": "CodeDeployEC2S3"
+					},
+					"arn:aws:iam::aws:policy/AmazonS3FullAccess"
+				]
+			}
+		},
+		"CodeDeployServiceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": {
+					"Ref": "CodeDeployServiceRoleName"
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+				],
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "",
+						"Effect": "Allow",
+						"Principal": {
+							"Service": [{
+								"Ref": "CodeDeployServiceRoleService"
+							}]
+						},
+						"Action": "sts:AssumeRole"
+					}]
+				}
+			}
+		},
+		"CodeDeployEC2S3": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": {
+					"Ref": "CodeDeployEC2S3PolicyName"
+				},
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Action": [
+							"s3:Get*",
+							"s3:List*"
+						],
+						"Effect": "Allow",
+						"Resource": "*"
+					}]
+				}
+			}
+		},
+		"RDSConnectPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": {
+					"Ref": "RDSConnectPolicyName"
+				},
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "Stmt1508975155000",
+						"Effect": "Allow",
+						"Action": [
+							"rds-db:connect"
+						],
+						"Resource": [
+							"*"
+						]
+					}]
+				}
+			}
+		},
+		"CodeDeployEC2ServiceRoleInstanceProfile": {
+			"Type": "AWS::IAM::InstanceProfile",
+			"Properties": {
+				"Path": "/",
+				"Roles": [{
+					"Ref": "CodeDeployEC2ServiceRole"
+				}]
+			}
+		},
+		"CodeDeployServiceRoleInstanceProfile": {
+			"Type": "AWS::IAM::InstanceProfile",
+			"Properties": {
+				"Path": "/",
+				"Roles": [{
+					"Ref": "CodeDeployServiceRole"
+				}]
 			}
 		}
 	}

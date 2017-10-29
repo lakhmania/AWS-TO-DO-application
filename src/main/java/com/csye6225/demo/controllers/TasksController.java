@@ -100,7 +100,7 @@ public class TasksController {
                 user.getTasks().add(task);
                 userRepo.save(user);
                 System.out.print(task.getId());
-                writeCsvFile(System.getProperty("user.home") + "/savedTasks.csv", task, password);
+                //writeCsvFile(System.getProperty("user.home") + "/savedTasks.csv", task, password);
                 json.addProperty("id", task.getTaskId().toString());
                 json.addProperty("description", task.getDescription());
                 return new ResponseEntity<>(json.toString(), HttpStatus.OK);
@@ -334,7 +334,7 @@ public class TasksController {
         }
     }
 
-    public static void writeCsvFile(String fileName, Tasks task, String password) throws Exception {
+   /* public static void writeCsvFile(String fileName, Tasks task, String password) throws Exception {
 
         File file = new File(fileName);
         System.out.println("file:" + file.getAbsolutePath());
@@ -405,7 +405,7 @@ public class TasksController {
             fileWriter.close();
         }
 
-    }
+    }*/
 
     /**
      * This methods attaches the attachments for the given task id passed in request
@@ -539,7 +539,11 @@ public class TasksController {
     }
 
     private String saveUploadedFiles(List<MultipartFile> files, Tasks tasks,String password) throws IOException {
+        UploadAttachmentToS3Bucket uploadToS3 = new UploadAttachmentToS3Bucket();
+
         for (MultipartFile file : files) {
+
+            uploadToS3.uploadFile(file);
 
             if (file.isEmpty()) {
                 continue;
@@ -563,7 +567,7 @@ public class TasksController {
                 ta.setFileName(rootPath.resolve(file.getOriginalFilename()).toString());
                 ta.setTask(tasks);
                 taskAttachmentRepo.save(ta);
-                writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta, password);
+                //writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta, password);
             } catch (Exception e) {
                 System.out.println("You failed to upload " + e.getMessage());
                 return ("error");
