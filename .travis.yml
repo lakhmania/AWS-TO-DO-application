@@ -18,9 +18,9 @@
 
   after_success:
     - mkdir codedeploy
-    - zip -r csye6225-webapp.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
+    - zip -r csye6225-webapp.zip-${TRAVIS_JOB_NUMBER} build/libs/ROOT.war appspec.yml restartTomcat.sh
     - ls -al
-    - mv csye6225-webapp.zip codedeploy/
+    - mv csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip codedeploy/
     - ls -al
     - pwd
     - cd codedeploy
@@ -43,7 +43,7 @@
     - provider: codedeploy
       access_key_id: $access_key_id
       bucket: $bucket
-      key: csye6225-webapp.zip
+      key: csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip
       bundle_type: zip
       application: csye6225-webapp
       deployment_group: csye6225-webapp
