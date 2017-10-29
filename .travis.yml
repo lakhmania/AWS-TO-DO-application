@@ -16,21 +16,21 @@
     - ./gradlew war
     - ./gradlew test --info
 
-after_success:
-  - mkdir codedeploy
-  - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
-  - ls -al
-  - mv csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip codedeploy/
-  - ls -al
-  - pwd
-  - cd codedeploy
-  - ls -al
-  - pwd
+  after_success:
+    - mkdir codedeploy
+    - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
+    - ls -al
+    - mv csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip codedeploy/
+    - ls -al
+    - pwd
+    - cd codedeploy
+    - ls -al
+    - pwd
 
   before_deploy:
     - cd ..
 
-deploy:
+  deploy:
   - provider: s3
     access_key_id: $access_key_id
     secret_access_key: $secret_access_key
@@ -54,13 +54,13 @@ deploy:
       all_branches: true
 
 
-notifications:
-  email:
-    recipients:
-    - koticha.c@husky.neu.edu
-    - merchant.n@husky.neu.edu
-    - lalwani.n@husky.neu.edu
-    - lakhmani.a@husky.neu.edu
+  notifications:
+    email:
+      recipients:
+      - koticha.c@husky.neu.edu
+      - merchant.n@husky.neu.edu
+      - lalwani.n@husky.neu.edu
+      - lakhmani.a@husky.neu.edu
 
-    on_success: always
-    on_failure: always
+      on_success: always
+      on_failure: always
