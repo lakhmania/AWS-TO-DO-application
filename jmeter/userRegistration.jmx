@@ -142,7 +142,11 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/users.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/users.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <boolProp name="ignoreFirstLine">false</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -253,7 +257,11 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -372,7 +380,11 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -469,7 +481,11 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/users.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/users.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -566,7 +582,11 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/savedTasksAttachments.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/savedTasksAttachments.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskAttachmentId,taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -662,7 +682,11 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>
@@ -758,7 +782,11 @@
         </HTTPSamplerProxy>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+<<<<<<< HEAD
+            <stringProp name="filename">/home/chintankoticha/savedTasks.csv</stringProp>
+=======
             <stringProp name="filename">/home/apoorva/savedTasks.csv</stringProp>
+>>>>>>> 30aa9dd86faaea461191729246484e61b4e3685e
             <stringProp name="fileEncoding"></stringProp>
             <stringProp name="variableNames">taskId,userId,password</stringProp>
             <boolProp name="ignoreFirstLine">false</boolProp>

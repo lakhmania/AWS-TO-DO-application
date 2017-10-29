@@ -1,20 +1,22 @@
-language: java
-jdk:
-  - oraclejdk8
+  language: java
+  jdk:
+    - oraclejdk8
 
-env:
-  - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
+  env:
+    - MYSQL_HOST=127.0.0.1 MYSQL_USER=root
 
-services:
-  - mysql
+  services:
+    - mysql
 
-sudo: false
-install: true
+  sudo: false
+  install: true
 
-script:
-  - ./gradlew build
-  - ./gradlew war
-  - ./gradlew test --info
+  script:
+    - ./gradlew build
+    - ./gradlew war
+    - ./gradlew test --info
+
+after_success:
   - mkdir codedeploy
   - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
   - ls -al
@@ -24,7 +26,9 @@ script:
   - cd codedeploy
   - ls -al
   - pwd
-  - cd ..
+
+  before_deploy:
+    - cd ..
 
 deploy:
   - provider: s3
