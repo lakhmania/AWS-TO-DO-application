@@ -49,6 +49,7 @@ deploy:
     on:
       all_branches: true
 
+
 notifications:
   email:
     recipients:
@@ -58,4 +59,4 @@ notifications:
     - lakhmani.a@husky.neu.edu
 
     on_success: always
-    on_failure: always 
+    on_failure: always
