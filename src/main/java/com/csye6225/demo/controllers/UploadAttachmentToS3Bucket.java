@@ -20,10 +20,9 @@ public class UploadAttachmentToS3Bucket {
 
     public void uploadFile(MultipartFile multipartfile){
         //AmazonS3 s3Client = new AmazonS3Client(new ProfileCredentialsProvider());
-        AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
-                //standard()
-                //.withCredentials(new InstanceProfileCredentialsProvider(false))
-                //.build();
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                .withCredentials(new InstanceProfileCredentialsProvider(false))
+                .build();
         try{
 
             System.out.println("Uploading file to s3 bucket");
@@ -31,6 +30,7 @@ public class UploadAttachmentToS3Bucket {
             s3Client.putObject(new PutObjectRequest(bucketName,filename.getName(),filename));
 
         }catch(AmazonServiceException ase){
+            System.out.println("bucket name: " + bucketName);
             System.out.println("Request made to s3 bucket failed");
             System.out.println("Error Message:    " + ase.getMessage());
             System.out.println("HTTP Status Code: " + ase.getStatusCode());
