@@ -44,12 +44,11 @@ public class UploadAttachmentToS3Bucket {
         }
     }
 
-    public File convertFromMultipart(MultipartFile file) throws Exception
-
     /**
      * This method converts a multipart file to File format
      * @param file : Task Attachment
      */
+    public File convertFromMultipart(MultipartFile file) throws Exception
     {
         File convFile = new File(file.getOriginalFilename());
         convFile.createNewFile();
