@@ -20,11 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -502,7 +499,6 @@ public class TasksController {
 
             values = credentials.split(":", 2);
             username = values[0];
-
 
             if (username.equals(task.getUser().getUserName())) {
                 try {
