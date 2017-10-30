@@ -36,7 +36,6 @@ import com.csye6225.demo.repo.UserRepository;
 import org.json.simple.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 
