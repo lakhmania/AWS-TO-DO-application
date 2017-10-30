@@ -20,17 +20,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 import com.csye6225.demo.pojo.TaskAttachments;
 import com.csye6225.demo.pojo.Tasks;
 import com.csye6225.demo.pojo.User;
@@ -40,7 +36,6 @@ import com.csye6225.demo.repo.UserRepository;
 import org.json.simple.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 
@@ -259,6 +254,7 @@ public class TasksController {
             values = credentials.split(":", 2);
             username = values[0];
         }
+
 
         if (username.equals(task.getUser().getUserName())) {
             List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
@@ -502,7 +498,6 @@ public class TasksController {
 
             values = credentials.split(":", 2);
             username = values[0];
-
 
             if (username.equals(task.getUser().getUserName())) {
                 try {

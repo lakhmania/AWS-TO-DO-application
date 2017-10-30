@@ -18,7 +18,10 @@ public class UploadAttachmentToS3Bucket {
 
         String bucketName = System.getProperty("bucket.name");
         System.out.println("bucket name is :" + System.getProperty("bucket.name"));
-        
+
+        /*Assigns Temporary credentials to IAM role
+        * InstanceProfileCredentialsProvider : false does not refresh the credentials
+        */
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
@@ -42,6 +45,11 @@ public class UploadAttachmentToS3Bucket {
     }
 
     public File convertFromMultipart(MultipartFile file) throws Exception
+
+    /**
+     * This method converts a multipart file to File format
+     * @param file : Task Attachment
+     */
     {
         File convFile = new File(file.getOriginalFilename());
         convFile.createNewFile();
@@ -50,4 +58,5 @@ public class UploadAttachmentToS3Bucket {
         fos.close();
         return convFile;
     }
+
 }
