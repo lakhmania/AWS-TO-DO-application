@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 import com.csye6225.demo.pojo.TaskAttachments;
 import com.csye6225.demo.pojo.Tasks;
 import com.csye6225.demo.pojo.User;
@@ -257,7 +256,7 @@ public class TasksController {
             username = values[0];
         }
 
-        
+
         if (username.equals(task.getUser().getUserName())) {
             List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
             jsonArray = new JSONArray();
