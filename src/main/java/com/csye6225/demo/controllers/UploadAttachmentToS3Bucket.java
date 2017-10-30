@@ -22,11 +22,9 @@ public class UploadAttachmentToS3Bucket {
         /*Assigns Temporary credentials to IAM role
         * InstanceProfileCredentialsProvider : false does not refresh the credentials
         */
-
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
-
         try{
 
             System.out.println("Uploading file to s3 bucket");
@@ -45,7 +43,6 @@ public class UploadAttachmentToS3Bucket {
             e.printStackTrace();
         }
     }
-    
 
     public File convertFromMultipart(MultipartFile file) throws Exception
     /**
