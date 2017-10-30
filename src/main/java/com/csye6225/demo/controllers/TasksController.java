@@ -257,6 +257,7 @@ public class TasksController {
             username = values[0];
         }
 
+        
         if (username.equals(task.getUser().getUserName())) {
             List<TaskAttachments> attachments = taskAttachmentRepo.findByTask(task);
             jsonArray = new JSONArray();
