@@ -538,7 +538,7 @@ public class TasksController {
 
         for (MultipartFile file : files) {
 
-            uploadToS3.uploadFile(file);
+            String keyName = uploadToS3.uploadFile(tasks,file);
 
             if (file.isEmpty()) {
                 continue;
@@ -559,7 +559,7 @@ public class TasksController {
                 System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
                 TaskAttachments ta = new TaskAttachments();
                 taskRepo.save(tasks);
-                ta.setFileName(rootPath.resolve(file.getOriginalFilename()).toString());
+                ta.setFileName(keyName);
                 ta.setTask(tasks);
                 taskAttachmentRepo.save(ta);
                 //writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta, password);

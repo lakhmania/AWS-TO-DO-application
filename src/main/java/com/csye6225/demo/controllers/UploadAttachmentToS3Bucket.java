@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.csye6225.demo.pojo.Tasks;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,7 +15,7 @@ import java.io.FileOutputStream;
 
 public class UploadAttachmentToS3Bucket {
 
-    public void uploadFile(MultipartFile multipartfile){
+    public String uploadFile(Tasks task, MultipartFile multipartfile){
 
         String bucketName = System.getProperty("bucket.name");
         System.out.println("bucket name is :" + System.getProperty("bucket.name"));
@@ -29,8 +30,8 @@ public class UploadAttachmentToS3Bucket {
 
             System.out.println("Uploading file to s3 bucket");
             File filename = convertFromMultipart(multipartfile);
-            s3Client.putObject(new PutObjectRequest(bucketName,filename.getName(),filename));
-
+            s3Client.putObject(new PutObjectRequest(bucketName,task.getTaskId().toString()+filename.getName(),filename));
+            return task.getTaskId().toString()+filename.getName();
         }catch(AmazonServiceException ase){
             System.out.println("bucket name: " + bucketName);
             System.out.println("Request made to s3 bucket failed");
@@ -39,8 +40,10 @@ public class UploadAttachmentToS3Bucket {
             System.out.println("AWS Error Code:   " + ase.getErrorCode());
             System.out.println("Error Type:       " + ase.getErrorType());
             System.out.println("Request ID:       " + ase.getRequestId());
-        } catch(Exception e){
+            return null;
+        } catch(Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
