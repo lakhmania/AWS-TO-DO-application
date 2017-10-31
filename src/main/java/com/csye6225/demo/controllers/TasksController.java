@@ -519,9 +519,9 @@ public class TasksController {
                     String returnmsg = deleteFromS3.deleteFile(ta.getFileName());
                     if(returnmsg.equalsIgnoreCase("deleted")){
                         System.out.println("SUCCESSFULLY DELETED FROM S3!!!");
+                        taskAttachmentRepo.delete(aid);
+                        taskRepo.save(task);
                     }
-                    taskAttachmentRepo.delete(aid);
-                    taskRepo.save(task);
                 } catch (Exception e) {
                     System.out.println("" + e.getMessage());
                 }
