@@ -478,6 +478,7 @@ public class TasksController {
     @RequestMapping(value = "/{id}/attachments/{idAttachments}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> deleteAttachments(HttpServletRequest request, @PathVariable("idAttachments") String attachmentid, @PathVariable("id") String id) {
+        DeleteAttachmentFromS3Bucket deleteFromS3 = new DeleteAttachmentFromS3Bucket();
         JsonObject json = new JsonObject();
 
         UUID uid = UUID.fromString(id);
@@ -515,8 +516,12 @@ public class TasksController {
                     }
                     String path = ta.getFileName();
                     Files.deleteIfExists(Paths.get(path));
-                    taskAttachmentRepo.delete(aid);
-                    taskRepo.save(task);
+                    String returnmsg = deleteFromS3.deleteFile(ta.getFileName());
+                    if(returnmsg.equalsIgnoreCase("deleted")){
+                        System.out.println("SUCCESSFULLY DELETED FROM S3!!!");
+                        taskAttachmentRepo.delete(aid);
+                        taskRepo.save(task);
+                    }
                 } catch (Exception e) {
                     System.out.println("" + e.getMessage());
                 }
@@ -538,7 +543,7 @@ public class TasksController {
 
         for (MultipartFile file : files) {
 
-            uploadToS3.uploadFile(file);
+            String keyName = uploadToS3.uploadFile(tasks,file);
 
             if (file.isEmpty()) {
                 continue;
@@ -559,7 +564,7 @@ public class TasksController {
                 System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
                 TaskAttachments ta = new TaskAttachments();
                 taskRepo.save(tasks);
-                ta.setFileName(rootPath.resolve(file.getOriginalFilename()).toString());
+                ta.setFileName(keyName);
                 ta.setTask(tasks);
                 taskAttachmentRepo.save(ta);
                 //writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta, password);
