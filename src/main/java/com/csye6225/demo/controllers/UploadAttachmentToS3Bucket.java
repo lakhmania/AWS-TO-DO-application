@@ -54,7 +54,7 @@ public class UploadAttachmentToS3Bucket {
     public File convertFromMultipart(MultipartFile file) throws Exception
     {
         File convFile = new File(file.getOriginalFilename());
-       // convFile.createNewFile();
+        convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(file.getBytes());
         fos.close();
