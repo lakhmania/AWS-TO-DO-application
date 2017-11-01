@@ -164,7 +164,11 @@
 								"chown tomcat8:tomcat8 /usr/share/tomcat8/bin/setenv.sh\n",
 								"chmod 777 -R /tmp\n",
 								"chmod 777 /var/lib/tomcat8 \n",
-								"chmod 777 /var/lib/tomcat8/webapps"
+								"chmod 777 /var/lib/tomcat8/webapps\n",
+								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'\n",
+								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'\n",
+								"sudo apt-get -y install mysql-server\n",
+								"sudo service mysql start"
 							]
 						]
 					}

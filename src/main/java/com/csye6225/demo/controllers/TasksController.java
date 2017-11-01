@@ -515,7 +515,7 @@ public class TasksController {
                         return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
                     }
                     String path = ta.getFileName();
-                    Files.deleteIfExists(Paths.get(path));
+                    //Files.deleteIfExists(Paths.get(path));
                     String returnmsg = deleteFromS3.deleteFile(ta.getFileName());
                     if(returnmsg.equalsIgnoreCase("deleted")){
                         System.out.println("SUCCESSFULLY DELETED FROM S3!!!");
@@ -544,8 +544,10 @@ public class TasksController {
         for (MultipartFile file : files) {
 
             String keyName = uploadToS3.uploadFile(tasks,file);
-
-            if (file.isEmpty()) {
+            if(keyName.equals(null)){
+                return("error");
+            }
+           /* if (file.isEmpty()) {
                 continue;
             }
             try {
@@ -561,17 +563,17 @@ public class TasksController {
                     System.out.println("" + e.getMessage());
                     return ("error");
                 }
-                System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());
+                System.out.println("Server File Location=" + rootPath.resolve(file.getOriginalFilename()).toString());*/
                 TaskAttachments ta = new TaskAttachments();
                 taskRepo.save(tasks);
                 ta.setFileName(keyName);
                 ta.setTask(tasks);
                 taskAttachmentRepo.save(ta);
                 //writeCsvFile(System.getProperty("user.home") + "/savedTasksAttachments.csv", ta, password);
-            } catch (Exception e) {
+            /*} catch (Exception e) {
                 System.out.println("You failed to upload " + e.getMessage());
                 return ("error");
-            }
+            }*/
         }
         return ("");
     }
