@@ -88,6 +88,31 @@ public class HomeController {
     return json.toString();
   }
 
+  @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST, produces = "application/json")
+  @ResponseBody
+  public String resetPassword(@RequestBody String userName, HttpServletRequest request) throws Exception{
+
+    DynamoDBUser dbUser = new DynamoDBUser();
+    System.out.println("Inside reset password method");
+    System.out.println(userName);
+
+    JsonObject json = new JsonObject();
+    User existingUser = userRepo.findByUserName(userName);
+
+    if(existingUser != null){
+      if(dbUser.checkTokenInDynamoDB(userName)){
+        //token already exists
+      }else{
+        dbUser.insertTokenForUser(userName);
+        //token generated
+      }
+    }
+
+    return json.toString();
+  }
+
+
+
   /*private void writeUsersToCsv(String filename, UserDetails user) throws Exception{
     File file = new File(filename);
     System.out.println("file:"+ file.getAbsolutePath());
