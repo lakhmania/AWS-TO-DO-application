@@ -303,12 +303,7 @@
 						"Ref": "PrimaryKeyName"
 					},
 					"AttributeType": "S"
-				},
-                  {
-                    "AttributeName": "user_email",
-                    "AttributeType": "S"
-                  }
-
+				}
                 ],
 				"KeySchema": [{
 					"AttributeName": {
