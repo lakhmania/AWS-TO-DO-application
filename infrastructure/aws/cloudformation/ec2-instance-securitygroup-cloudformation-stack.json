@@ -367,7 +367,8 @@
 				"ManagedPolicyArns": [{
 						"Ref": "CodeDeployEC2S3"
 					},
-					"arn:aws:iam::aws:policy/AmazonS3FullAccess"
+					"arn:aws:iam::aws:policy/AmazonS3FullAccess",
+					"arn:aws:iam::aws:policy/AmazonSNSFullAccess"
 				]
 			}
 		},
