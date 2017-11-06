@@ -8,6 +8,12 @@
 package com.csye6225.demo.controllers;
 
 
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.*;
+import com.amazonaws.services.sns.util.Topics;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserDetails;
 import com.csye6225.demo.repo.UserRepository;
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -92,19 +99,19 @@ public class HomeController {
   @ResponseBody
   public String resetPassword(@RequestBody String userName, HttpServletRequest request) throws Exception{
 
-    DynamoDBUser dbUser = new DynamoDBUser();
-    System.out.println("Inside reset password method");
-    System.out.println(userName);
-
     JsonObject json = new JsonObject();
-    User existingUser = userRepo.findByUserName(userName);
 
-    if(existingUser != null){
-      if(dbUser.checkTokenInDynamoDB(userName)){
-        //token already exists
-      }else{
-        dbUser.insertTokenForUser(userName);
-        //token generated
+    AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
+            .withCredentials(new InstanceProfileCredentialsProvider(false))
+            .build();
+    List<Topic> topics =  snsClient.listTopics().getTopics();
+
+    for(Topic topic : topics){
+
+      if(topic.getTopicArn().endsWith("password_reset")){
+        PublishRequest req = new PublishRequest(topic.getTopicArn(),userName);
+        snsClient.publish(req);
+        break;
       }
     }
 
