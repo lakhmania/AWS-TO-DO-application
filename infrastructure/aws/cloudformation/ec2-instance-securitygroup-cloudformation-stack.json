@@ -88,6 +88,9 @@
 		},
 		"RDSConnectPolicyName": {
 			"Type": "String"
+		},
+		"TopicName": {
+			"Type": "String"
 		}
 	},
 	"Resources": {
@@ -300,7 +303,13 @@
 						"Ref": "PrimaryKeyName"
 					},
 					"AttributeType": "S"
-				}],
+				},
+                  {
+                    "AttributeName": "user_email",
+                    "AttributeType": "S"
+                  }
+
+                ],
 				"KeySchema": [{
 					"AttributeName": {
 						"Ref": "PrimaryKeyName"
@@ -448,6 +457,30 @@
 					"Ref": "CodeDeployServiceRole"
 				}]
 			}
-		}
+		},
+		"MySNSTopic" : {
+			"Type" : "AWS::SNS::Topic",
+			"Properties" : {
+				"TopicName" : {
+					"Ref": "TopicName"
+				}
+			}
+		},
+	       "LambdaExecutionRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+			  "AssumeRolePolicyDocument": {
+			    "Version": "2012-10-17",
+			    "Statement": [{ "Effect": "Allow", "Principal": {"Service": ["lambda.amazonaws.com"]}, "Action": ["sts:AssumeRole"] }]
+			  },
+			  "Path": "/",
+			  "ManagedPolicyArns": [
+			  "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+			    ],
+			  "RoleName": "LambdaExecutionRole"
+			}	
+	       }
+	    }
+
 	}
-}
+
