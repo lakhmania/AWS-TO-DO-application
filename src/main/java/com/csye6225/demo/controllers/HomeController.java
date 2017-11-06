@@ -8,6 +8,12 @@
 package com.csye6225.demo.controllers;
 
 
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.*;
+import com.amazonaws.services.sns.util.Topics;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserDetails;
 import com.csye6225.demo.repo.UserRepository;
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -87,6 +94,31 @@ public class HomeController {
 
     return json.toString();
   }
+
+  @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+  @ResponseBody
+  public String resetPassword(@RequestBody UserDetails details,HttpServletRequest request) throws Exception{
+
+    JsonObject json = new JsonObject();
+
+    AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
+            .withCredentials(new InstanceProfileCredentialsProvider(false))
+            .build();
+    List<Topic> topics =  snsClient.listTopics().getTopics();
+
+    for(Topic topic : topics){
+
+      if(topic.getTopicArn().endsWith("password_reset")){
+        PublishRequest req = new PublishRequest(topic.getTopicArn(),details.getUserName());
+        snsClient.publish(req);
+        break;
+      }
+    }
+    json.addProperty("message","reset linked sent to your email address");
+    return json.toString();
+  }
+
+
 
   /*private void writeUsersToCsv(String filename, UserDetails user) throws Exception{
     File file = new File(filename);
