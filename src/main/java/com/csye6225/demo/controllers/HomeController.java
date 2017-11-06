@@ -95,9 +95,9 @@ public class HomeController {
     return json.toString();
   }
 
-  @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST, produces = "application/json")
+  @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
   @ResponseBody
-  public String resetPassword(@RequestBody String userName, HttpServletRequest request) throws Exception{
+  public String resetPassword(@RequestBody UserDetails details,HttpServletRequest request) throws Exception{
 
     JsonObject json = new JsonObject();
 
@@ -109,12 +109,12 @@ public class HomeController {
     for(Topic topic : topics){
 
       if(topic.getTopicArn().endsWith("password_reset")){
-        PublishRequest req = new PublishRequest(topic.getTopicArn(),userName);
+        PublishRequest req = new PublishRequest(topic.getTopicArn(),details.getUserName());
         snsClient.publish(req);
         break;
       }
     }
-
+    json.addProperty("message","reset linked sent to your email address");
     return json.toString();
   }
 
