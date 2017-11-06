@@ -25,12 +25,12 @@ import java.util.List;
 @Controller
 public class resetPassword {
 
-    @RequestMapping(value ="/resetPassword", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value ="/resetPassword", method = RequestMethod.POST)
     @ResponseBody
-    public void welcome(@RequestBody UserDetails details,HttpServletRequest request)
+    public String welcome(@RequestBody UserDetails details,HttpServletRequest request)
     {
 
-
+        JsonObject json = new JsonObject();
         AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
@@ -49,6 +49,10 @@ public class resetPassword {
     String msg = "My text published to SNS topic with email endpoint";
     PublishRequest publishRequest = new PublishRequest(topicArn, details.getUserName());
     PublishResult publishResult = snsClient.publish(publishRequest);
+    json.addProperty("message","Reset Link Sent!");
+
+
+        return json.toString();
     }
 
 }
