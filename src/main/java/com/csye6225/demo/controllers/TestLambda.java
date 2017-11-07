@@ -3,6 +3,12 @@ package com.csye6225.demo.controllers;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.sns.AmazonSNS;
 
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
@@ -48,6 +54,31 @@ public class TestLambda {
         }
 
        // jsonObject.addProperty("message", "Reset Password link emailed ");
+
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
+                .build();
+
+        DynamoDB dynamoDB = new DynamoDB(client);
+
+//        context.getLogger().log("Trying to insert item");
+        Table table = dynamoDB.getTable("csye6225");
+        String id = "kdjfkdjf0";
+        try {
+            table.putItem(new Item().withPrimaryKey("id", id));
+            System.out.println("PutItem succeeded: " + id );
+//            context.getLogger().log("PutItem succeeded: " + id);
+        }
+        catch (Exception e) {
+            System.err.println("Unable to add id: " + id);
+//            context.getLogger().log("Unable to add id: " + id);
+//            context.getLogger().log(e.getMessage());
+            System.err.println(e.getMessage());
+
+
+        }
+
+
 
         return jsonObject.toString();
     }
