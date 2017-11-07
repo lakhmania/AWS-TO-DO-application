@@ -10,7 +10,9 @@ import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
 import com.amazonaws.services.sns.model.Topic;
+import com.csye6225.demo.pojo.UserDetails;
 import com.google.gson.JsonObject;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,7 +23,7 @@ public class TestLambda {
 
     @RequestMapping(value = "/forgot-password", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public String forgotPassword() {
+    public String forgotPassword(@RequestBody String username) throws  Exception {
         JsonObject jsonObject = new JsonObject();
 
       AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
@@ -35,9 +37,9 @@ public class TestLambda {
 
         for (Topic topic : topics) {
             if (topic.getTopicArn().endsWith("password_reset")) {
-                String msg = "My text published to SNS topic with Lambda endpoint";
+
                 //   PublishRequest publishRequest = new PublishRequest().withTopic(topic.getTopicArn());
-                PublishRequest publishRequest = new PublishRequest(topic.getTopicArn(), msg);
+                PublishRequest publishRequest = new PublishRequest(topic.getTopicArn(), username);
                 //PublishResult publishResult = snsClient.publish(publishRequest);
             }
         }
