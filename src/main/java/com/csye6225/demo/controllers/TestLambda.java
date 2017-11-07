@@ -56,7 +56,8 @@ public class TestLambda {
        // jsonObject.addProperty("message", "Reset Password link emailed ");
 
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-east-1"))
+
                 .build();
 
         DynamoDB dynamoDB = new DynamoDB(client);
