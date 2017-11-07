@@ -12,6 +12,7 @@ import com.amazonaws.services.sns.model.PublishResult;
 import com.amazonaws.services.sns.model.Topic;
 import com.csye6225.demo.pojo.UserDetails;
 import com.google.gson.JsonObject;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
+@Controller
 public class TestLambda {
 
     @RequestMapping(value = "/forgot-password", method = RequestMethod.POST, produces = "application/json")
