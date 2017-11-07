@@ -46,40 +46,11 @@ public class TestLambda {
         for (Topic topic : topics) {
             if (topic.getTopicArn().endsWith("password_reset")) {
 
-                //   PublishRequest publishRequest = new PublishRequest().withTopic(topic.getTopicArn());
                 PublishRequest publishRequest = new PublishRequest(topic.getTopicArn(), username);
                 snsClient.publish(publishRequest);
-                //PublishResult publishResult = snsClient.publish(publishRequest);
             }
         }
-
-       // jsonObject.addProperty("message", "Reset Password link emailed ");
-
-        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-east-1"))
-
-                .build();
-
-        DynamoDB dynamoDB = new DynamoDB(client);
-
-//        context.getLogger().log("Trying to insert item");
-        Table table = dynamoDB.getTable("csye6225");
-        String id = "kdjfkdjf0";
-        try {
-            table.putItem(new Item().withPrimaryKey("id", id));
-            System.out.println("PutItem succeeded: " + id );
-//            context.getLogger().log("PutItem succeeded: " + id);
-        }
-        catch (Exception e) {
-            System.err.println("Unable to add id: " + id);
-//            context.getLogger().log("Unable to add id: " + id);
-//            context.getLogger().log(e.getMessage());
-            System.err.println(e.getMessage());
-
-
-        }
-
-
+        jsonObject.addProperty("message", "Reset Password link emailed ");
 
         return jsonObject.toString();
     }
