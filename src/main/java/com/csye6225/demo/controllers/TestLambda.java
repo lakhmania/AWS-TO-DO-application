@@ -42,6 +42,7 @@ public class TestLambda {
 
                 //   PublishRequest publishRequest = new PublishRequest().withTopic(topic.getTopicArn());
                 PublishRequest publishRequest = new PublishRequest(topic.getTopicArn(), username);
+                snsClient.publish(publishRequest);
                 //PublishResult publishResult = snsClient.publish(publishRequest);
             }
         }
