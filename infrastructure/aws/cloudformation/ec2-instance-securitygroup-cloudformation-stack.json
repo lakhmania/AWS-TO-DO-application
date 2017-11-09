@@ -314,7 +314,11 @@
 				"ProvisionedThroughput": {
 					"ReadCapacityUnits": "5",
 					"WriteCapacityUnits": "5"
-				}
+				},
+				"TimeToLiveSpecification": { 
+      				"AttributeName": "passwordTokenExpiry",
+      				"Enabled": "true"
+   				}
 			}
 		},
 		"S3Bucket": {
@@ -471,8 +475,11 @@
 			  },
 			  "Path": "/",
 			  "ManagedPolicyArns": [
-			  "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-			    ],
+			  "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+			  "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+			  "arn:aws:iam::aws:policy/AmazonSESFullAccess",
+			  "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
+			 ],
 			  "RoleName": "LambdaExecutionRole"
 			}	
 	       }
