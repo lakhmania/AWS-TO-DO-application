@@ -10,10 +10,8 @@ package com.csye6225.demo.controllers;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.*;
-import com.amazonaws.services.sns.util.Topics;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.pojo.UserDetails;
 import com.csye6225.demo.repo.UserRepository;
@@ -32,8 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -87,7 +83,7 @@ public class HomeController {
       //writeUsersToCsv(System.getProperty("user.home") + "/users.csv", details);
 
       json.addProperty("message", "User added successfully");
-      //json.addProperty("sessionId", request.getSession().getId());
+
     }else{
       json.addProperty("message", "user already exists");
     }
@@ -101,20 +97,28 @@ public class HomeController {
 
     JsonObject json = new JsonObject();
 
-    AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
-            .withCredentials(new InstanceProfileCredentialsProvider(false))
-            .build();
-    List<Topic> topics =  snsClient.listTopics().getTopics();
+    User existingUser = userRepo.findByUserName(details.getUserName());
 
-    for(Topic topic : topics){
+    if(existingUser != null){
+      AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
+              .withCredentials(new InstanceProfileCredentialsProvider(false))
+              .build();
+      List<Topic> topics =  snsClient.listTopics().getTopics();
 
-      if(topic.getTopicArn().endsWith("password_reset")){
-        PublishRequest req = new PublishRequest(topic.getTopicArn(),details.getUserName());
-        snsClient.publish(req);
-        break;
+      for(Topic topic : topics){
+
+        if(topic.getTopicArn().endsWith("password_reset")){
+          PublishRequest req = new PublishRequest(topic.getTopicArn(),details.getUserName());
+          snsClient.publish(req);
+          break;
+        }
       }
+      json.addProperty("message","reset linked sent to your email address");
+    } else {
+
+      json.addProperty("message","username name doesn't exists");
     }
-    json.addProperty("message","reset linked sent to your email address");
+
     return json.toString();
   }
 
