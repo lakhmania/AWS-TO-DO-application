@@ -19,5 +19,5 @@ hooks:
      timeout: 180
      runas: ubuntu
    - location: ./restartawslogsservice.sh
-     timeout: 180
+     timeout: 300
      runas: ubuntu
