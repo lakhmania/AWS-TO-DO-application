@@ -188,12 +188,14 @@
 								"echo '[Install]' >> /etc/systemd/system/awslogs.service\n",
 								"echo 'WantedBy=multi-user.target' >> /etc/systemd/system/awslogs.service\n",
 								"chmod +x /etc/systemd/system/awslogs.service\n",
-								"echo '#!/bin/sh' >> /home/ubuntu/awslogs.conf\n",
+								"echo '' >> /home/ubuntu/awslogs.conf\n",
 								"chmod +x /home/ubuntu/awslogs.conf\n",
 								"sudo apt-get update\n",
 								"sudo apt-get install python --yes\n",
 								"wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
-								"python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf"
+								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf",
+								"sleep 120\n",
+								"sudo service awslogs restart\n"
 							]
 						]
 					}
