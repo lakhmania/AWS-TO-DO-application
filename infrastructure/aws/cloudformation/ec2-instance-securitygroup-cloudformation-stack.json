@@ -192,7 +192,7 @@
 								"chmod +x /etc/systemd/system/awslogs.service\n",
 								"echo '' >> /home/ubuntu/awslogs.conf\n",
 								"chmod +x /home/ubuntu/awslogs.conf\n",
-								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n"
+								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n",
 								"sudo rm /home/ubuntu/awslogs.conf\n"
 							]
 						]
