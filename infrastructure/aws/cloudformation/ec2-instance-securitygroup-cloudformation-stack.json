@@ -144,7 +144,6 @@
 								"sudo apt-get install ruby --yes\n",
 								"sudo apt-get install wget --yes\n",
 								"sudo apt-get install python --yes\n",
-								"wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
 								"cd /home/ubuntu\n",
 								"pwd\n",
 								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
@@ -192,7 +191,8 @@
 								"chmod +x /etc/systemd/system/awslogs.service\n",
 								"echo '' >> /home/ubuntu/awslogs.conf\n",
 								"chmod +x /home/ubuntu/awslogs.conf\n",
-								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n"
+								"sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
+								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n",
 								"sudo rm /home/ubuntu/awslogs.conf\n"
 							]
 						]
