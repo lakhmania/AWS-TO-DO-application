@@ -10,6 +10,8 @@ files:
     destination: /var/lib/tomcat8/webapps
   - source: ./awslogs.conf
     destination: /var/awslogs/etc
+  - source: ./restartawslogsservice.sh
+    destination: /home/ubuntu
 
 hooks:
   AfterInstall:
