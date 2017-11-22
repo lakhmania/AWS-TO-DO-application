@@ -8,7 +8,7 @@ files:
     destination: /home/ubuntu
   - source: ./build/libs/ROOT.war
     destination: /var/lib/tomcat8/webapps
-  - source: ./awslogs.conf
+  - source: ./infrastructure/aws/cloudformation/cloudwatch/awslogs.conf
     destination: /home/ubuntu
   - source: ./restartawslogsservice.sh
     destination: /home/ubuntu
