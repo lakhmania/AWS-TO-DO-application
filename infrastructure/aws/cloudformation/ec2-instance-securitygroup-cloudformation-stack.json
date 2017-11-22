@@ -144,7 +144,6 @@
 								"sudo apt-get install ruby --yes\n",
 								"sudo apt-get install wget --yes\n",
 								"sudo apt-get install python --yes\n",
-								"wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
 								"cd /home/ubuntu\n",
 								"pwd\n",
 								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
@@ -174,7 +173,6 @@
 								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'\n",
 								"sudo apt-get -y install mysql-server\n",
 								"sudo service mysql start\n",
-								"echo '#!/bin/sh' >> /etc/systemd/system/awslogs.service\n",
 								"echo '[Unit]' >> /etc/systemd/system/awslogs.service\n",
 								"echo 'Description=The CloudWatch Logs agent' >> /etc/systemd/system/awslogs.service\n",
 								"echo 'After=rc-local.service' >> /etc/systemd/system/awslogs.service\n",
@@ -192,6 +190,7 @@
 								"chmod +x /etc/systemd/system/awslogs.service\n",
 								"echo '' >> /home/ubuntu/awslogs.conf\n",
 								"chmod +x /home/ubuntu/awslogs.conf\n",
+								"sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
 								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n",
 								"sudo rm /home/ubuntu/awslogs.conf\n"
 							]
@@ -393,6 +392,9 @@
 				"ManagedPolicyArns": [{
 						"Ref": "CodeDeployEC2S3"
 					},
+					{
+						"Ref": "CloudWatchLogPolicy"
+					},
 					"arn:aws:iam::aws:policy/AmazonS3FullAccess",
 					"arn:aws:iam::aws:policy/AmazonSNSFullAccess"
 				]
@@ -504,7 +506,30 @@
 			 ],
 			  "RoleName": "LambdaExecutionRole"
 			}	
-	       }
+	       },
+		"CloudWatchLogPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudWatchPolicyName",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+						    "Effect": "Allow",
+						    "Action": [
+							"logs:CreateLogGroup",
+							"logs:CreateLogStream",
+							"logs:PutLogEvents",
+							"logs:DescribeLogStreams"
+						    ],
+						    "Resource": [
+							"arn:aws:logs:*:*:*"
+						    ]
+						}
+				]
+				}
+			}
+		}
 	    }
 
 	}
