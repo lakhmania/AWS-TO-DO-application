@@ -19,7 +19,7 @@
 
   after_success:
     - mkdir codedeploy
-    - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh
+    - zip -r csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip build/libs/ROOT.war appspec.yml restartTomcat.sh restartawslogsservice.sh infrastructure/aws/cloudwatch/awslogs.conf
     - ls -al
     - mv csye6225-webapp-${TRAVIS_JOB_NUMBER}.zip codedeploy/
     - ls -al
