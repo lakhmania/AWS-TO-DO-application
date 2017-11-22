@@ -173,7 +173,6 @@
 								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'\n",
 								"sudo apt-get -y install mysql-server\n",
 								"sudo service mysql start\n",
-								"echo '#!/bin/sh' >> /etc/systemd/system/awslogs.service\n",
 								"echo '[Unit]' >> /etc/systemd/system/awslogs.service\n",
 								"echo 'Description=The CloudWatch Logs agent' >> /etc/systemd/system/awslogs.service\n",
 								"echo 'After=rc-local.service' >> /etc/systemd/system/awslogs.service\n",

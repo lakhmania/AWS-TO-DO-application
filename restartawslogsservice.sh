@@ -1,6 +1,8 @@
 #!/bin/bash
 
-sudo mv /home/ubuntu/awslogs.conf /var/awslogs/etc
-sudo service awslogs restart
-sleep 120
-sudo service awslogs start
+sudo rm awslogs.conf
+cd /var/awslogs/etc
+sudo rm awslogs.conf
+cd ..
+sudo cp awslogs.conf /var/awslogs/etc
+sudo systemctl restart awslogs.service
