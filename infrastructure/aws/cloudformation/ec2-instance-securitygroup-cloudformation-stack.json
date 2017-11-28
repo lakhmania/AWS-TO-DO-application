@@ -564,9 +564,7 @@
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
 				"GroupDescription": "Load Balancer Security Group",
-				"GroupName": {
-					"Ref": "GroupName"
-				},
+				"GroupName":"LoadBalancerGroupSecurity",
 				"VpcId": {
 					"Ref": "VpcId"
 				},
