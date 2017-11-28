@@ -583,7 +583,10 @@
 				"Scheme": "internet-facing",
 				"Subnets": [{
 					"Ref": "SubnetId"
-				}],
+				},
+				{
+						"Ref": "SubnetId2"
+					}],
 				"SecurityGroups": [{
 					"Fn::GetAtt": [
 						"LoadBalancerSecurityGroup",
