@@ -581,9 +581,9 @@
 			"Properties": {
 				"Name": "CSYE6225LoadBalancerANNC",
 				"Scheme": "internet-facing",
-				"Subnets": {
+				"Subnets": [{
 					"Ref": "SubnetId"
-				},
+				}],
 				"SecurityGroups": [{
 					"Fn::GetAtt": [
 						"LoadBalancerSecurityGroup",
