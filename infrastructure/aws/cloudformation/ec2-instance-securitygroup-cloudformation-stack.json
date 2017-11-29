@@ -91,6 +91,9 @@
 		},
 		"TopicName": {
 			"Type": "String"
+		},
+		"CertificateArn1": {
+			"Type": "String"
 		}
 	},
 	"Resources": {
@@ -581,9 +584,13 @@
 			"Properties": {
 				"Name": "CSYE6225LoadBalancerANNC",
 				"Scheme": "internet-facing",
-				"Subnets": {
+				"Subnets": [{
 					"Ref": "SubnetId"
 				},
+					{
+						"Ref": "SubnetId2"
+					}
+				],
 				"SecurityGroups": [{
 					"Fn::GetAtt": [
 						"LoadBalancerSecurityGroup",
@@ -592,6 +599,42 @@
 				}],
 				"Type": "application",
 				"IpAddressType": "ipv4"
+			}
+		},
+		"ALBListener" : {
+			"Type" : "AWS::ElasticLoadBalancingV2::Listener",
+			"Properties" : {
+				"DefaultActions" : [{
+					"Type" : "forward",
+					"TargetGroupArn" : { "Ref" : "ALBTargetGroup" }
+				}],
+				"LoadBalancerArn" : { "Ref" : "LoadBalancer" },
+				"Port" : "443",
+				"Protocol" : "HTTPS",
+				"Certificates": [
+					{
+						"CertificateArn": {
+							"Ref": "CertificateArn1"
+						}
+					}
+				]
+			}
+		},
+		"ALBTargetGroup" : {
+			"Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
+			"Properties" : {
+				"HealthCheckIntervalSeconds" : 60,
+				"UnhealthyThresholdCount" : 10,
+				"HealthCheckPath" : "/",
+				"Name" : "MyTargetGroup",
+				"Port" : 80,
+				"Protocol" : "HTTP",
+				"VpcId" : { "Ref": "VpcId" },
+				"Targets": [
+					{ "Id": {"Ref" : "EC2Instance"}, "Port": 80 },
+					{ "Id": {"Ref" : "EC2Instance2"}, "Port": 80 },
+					{ "Id": {"Ref" : "EC2Instance3"}, "Port": 80 }
+				]
 			}
 		},
 		"S3Bucket": {
@@ -611,12 +654,10 @@
 				"Name": {
 					"Ref": "Name"
 				},
-				"ResourceRecords": [{
-					"Fn::GetAtt": [
-						"EC2Instance",
-						"PublicIp"
-					]
-				}],
+				"AliasTarget" : {
+					"HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneNameID"] },
+					"DNSName" : { "Fn::GetAtt" : ["LoadBalancer","DNSName"] }
+				},
 				"TTL": "60",
 				"Type": "A"
 			}
