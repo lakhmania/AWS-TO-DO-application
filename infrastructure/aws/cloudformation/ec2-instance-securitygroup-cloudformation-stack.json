@@ -655,10 +655,9 @@
 					"Ref": "Name"
 				},
 				"AliasTarget" : {
-					"HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneNameID"] },
+					"HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneID"] },
 					"DNSName" : { "Fn::GetAtt" : ["LoadBalancer","DNSName"] }
 				},
-				"TTL": "60",
 				"Type": "A"
 			}
 		},
