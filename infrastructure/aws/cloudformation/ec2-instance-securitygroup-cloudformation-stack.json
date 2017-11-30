@@ -657,7 +657,6 @@
 					"HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneID"] },
 					"DNSName" : { "Fn::GetAtt" : ["LoadBalancer","DNSName"] }
 				},
-				"TTL": "60",
 				"Type": "A"
 			}
 		},
@@ -815,7 +814,8 @@
 				"ManagedPolicyName": "CloudWatchPolicyName",
 				"PolicyDocument": {
 					"Version": "2012-10-17",
-					"Statement": [{
+					"Statement": [
+                       {
 						"Effect": "Allow",
 						"Action": [
 							"logs:CreateLogGroup",
