@@ -627,13 +627,13 @@
 				"UnhealthyThresholdCount" : 10,
 				"HealthCheckPath" : "/",
 				"Name" : "MyTargetGroup",
-				"Port" : 80,
-				"Protocol" : "HTTP",
+				"Port" : 443,
+				"Protocol" : "HTTPS",
 				"VpcId" : { "Ref": "VpcId" },
 				"Targets": [
-					{ "Id": {"Ref" : "EC2Instance"}, "Port": 80 },
-					{ "Id": {"Ref" : "EC2Instance2"}, "Port": 80 },
-					{ "Id": {"Ref" : "EC2Instance3"}, "Port": 80 }
+					{ "Id": {"Ref" : "EC2Instance"}, "Port":  443 },
+					{ "Id": {"Ref" : "EC2Instance2"}, "Port": 443 },
+					{ "Id": {"Ref" : "EC2Instance3"}, "Port": 443 }
 				]
 			}
 		},
