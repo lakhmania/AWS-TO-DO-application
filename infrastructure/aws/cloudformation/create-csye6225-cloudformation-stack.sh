@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #CLOUDFORMATIONSTACK -- stack name
 export VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[0].VpcId" --output text)
 
