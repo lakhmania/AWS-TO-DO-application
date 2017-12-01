@@ -100,7 +100,7 @@
 		"EC2Instance": {
            "Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties": {
-                "AssociatePublicIpAddress": "false",
+                "AssociatePublicIpAddress": "true",
 				"ImageId": {
 					"Ref": "ImageId"
 				},
@@ -240,17 +240,43 @@
                     "IpProtocol":"tcp",
                     "FromPort":"443",
                     "ToPort":"443",
-                    "CidrIp":"0.0.0.0/0"
+					"SourceSecurityGroupId": {
+						  "Fn::GetAtt": [
+							  "LoadBalancerSecurityGroup",
+							  "GroupId"
+						  ]
+					}
                   },
-
-
                   {
                     "IpProtocol":"tcp",
                     "FromPort":"80",
                     "ToPort":"80",
-                    "CidrIp":"0.0.0.0/0"
+					"SourceSecurityGroupId": {
+						  "Fn::GetAtt": [
+							  "LoadBalancerSecurityGroup",
+							  "GroupId"
+						  ]
+					}
                   }
                 ]
+			}
+		},
+		"LoadBalancerSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupName":  "ALB_SG",
+				"GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
+				"VpcId": {
+					"Ref": "VpcId"
+				},
+				"SecurityGroupIngress": [
+					{
+						"IpProtocol":"tcp",
+						"FromPort":"443",
+						"ToPort":"443",
+						"CidrIp":"0.0.0.0/0"
+					}
+				]
 			}
 		},
 		"RDSInstance": {
@@ -367,11 +393,10 @@
 						"Ref": "SubnetId2"
 					}
 				],
+
+				"SecurityGroups":[{"Ref":"LoadBalancerSecurityGroup"}],
 				"Type": "application",
-				"IpAddressType": "ipv4",
-                "SecurityGroups": [{
-                                   "Ref": "WebServerSecurityGroup"
-                             }]
+				"IpAddressType": "ipv4"
 			}
 		},
 		"ALBListener" : {
