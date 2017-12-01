@@ -438,7 +438,12 @@
 						"IpProtocol": "tcp",
 						"FromPort": "80",
 						"ToPort": "80",
-						"CidrIp": "0.0.0.0/0"
+						"SourceSecurityGroupId": {
+						"Fn::GetAtt": [
+							"LoadBalancerSecurityGroup",
+							"GroupId"
+						]
+					}
 					},
 					{
 						"IpProtocol": "tcp",
@@ -450,7 +455,13 @@
 						"IpProtocol": "tcp",
 						"FromPort": "443",
 						"ToPort": "443",
-						"CidrIp": "0.0.0.0/0"
+						"SourceSecurityGroupId": {
+						"Fn::GetAtt": [
+							"LoadBalancerSecurityGroup",
+							"GroupId"
+						]
+					}
+						
 					},
 					{
 						"IpProtocol": "tcp",
@@ -458,6 +469,8 @@
 						"ToPort": "8080",
 						"CidrIp": "0.0.0.0/0"
 					}
+					
+
 				]
 			}
 		},
@@ -576,7 +589,33 @@
 					"FromPort": "443",
 					"ToPort": "443",
 					"CidrIp": "0.0.0.0/0"
-				}]
+				}],
+				"SecurityGroupEgress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"DestinationSecurityGroupId": {
+						"Fn::GetAtt": [
+							"WebServerSecurityGroup",
+							"GroupId"
+						]
+					}
+				},
+
+                                {"IpProtocol": "tcp",
+					"FromPort": "80",
+					"ToPort": "80",
+					"DestinationSecurityGroupId": {
+						"Fn::GetAtt": [
+							"WebServerSecurityGroup",
+							"GroupId"
+						]
+					}
+				}
+				
+				]
+   
+				
 			}
 		},
 		"LoadBalancer": {
@@ -627,13 +666,13 @@
 				"UnhealthyThresholdCount" : 10,
 				"HealthCheckPath" : "/",
 				"Name" : "MyTargetGroup",
-				"Port" : 443,
+				"Port" : 80,
 				"Protocol" : "HTTPS",
 				"VpcId" : { "Ref": "VpcId" },
 				"Targets": [
-					{ "Id": {"Ref" : "EC2Instance"}, "Port":  443 },
-					{ "Id": {"Ref" : "EC2Instance2"}, "Port": 443 },
-					{ "Id": {"Ref" : "EC2Instance3"}, "Port": 443 }
+					{ "Id": {"Ref" : "EC2Instance"}, "Port":  80 },
+					{ "Id": {"Ref" : "EC2Instance2"}, "Port": 80 },
+					{ "Id": {"Ref" : "EC2Instance3"}, "Port": 80 }
 				]
 			}
 		},

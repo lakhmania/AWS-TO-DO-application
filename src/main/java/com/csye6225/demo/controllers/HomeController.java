@@ -19,6 +19,8 @@ import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,7 +51,7 @@ public class HomeController {
 
   @RequestMapping(value ="/", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
-  public String welcome(HttpServletRequest request)
+  public ResponseEntity<String> welcome(HttpServletRequest request)
   {
 
     JsonObject jsonObject = new JsonObject();
@@ -61,7 +63,8 @@ public class HomeController {
       jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
     }
 
-    return jsonObject.toString();
+    return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
+    //return jsonObject.toString();
 
   }
 
