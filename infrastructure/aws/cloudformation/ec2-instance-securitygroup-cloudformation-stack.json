@@ -590,30 +590,7 @@
 					"ToPort": "443",
 					"CidrIp": "0.0.0.0/0"
 				}],
-				"SecurityGroupEgress": [{
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"DestinationSecurityGroupId": {
-						"Fn::GetAtt": [
-							"WebServerSecurityGroup",
-							"GroupId"
-						]
-					}
-				},
-
-                                {"IpProtocol": "tcp",
-					"FromPort": "80",
-					"ToPort": "80",
-					"DestinationSecurityGroupId": {
-						"Fn::GetAtt": [
-							"WebServerSecurityGroup",
-							"GroupId"
-						]
-					}
-				}
 				
-				]
    
 				
 			}
