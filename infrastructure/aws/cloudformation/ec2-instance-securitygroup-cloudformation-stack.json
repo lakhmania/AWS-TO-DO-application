@@ -364,12 +364,6 @@
 				{
 						"Ref": "SubnetId2"
 					}],
-				"SecurityGroups": [{
-					"Fn::GetAtt": [
-						"LoadBalancerSecurityGroup",
-						"GroupId"
-					]
-				}],
 				"Type": "application",
 				"IpAddressType": "ipv4"
 			}
