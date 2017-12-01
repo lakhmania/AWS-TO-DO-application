@@ -264,9 +264,7 @@
 		"LoadBalancerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
-				"GroupName": {
-					"Ref": "GroupName"
-				},
+				"GroupName":  "ALB_SG",
 				"GroupDescription": "Enable HTTP access via port 80, SSH access via port 22",
 				"VpcId": {
 					"Ref": "VpcId"
