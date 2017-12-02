@@ -23,7 +23,7 @@
 * Run ./jmeter.sh through command line to open jmeter GUI console.
 * Create a new thread group and set-up load testing platform like number of users and ramp-up time on the server for performance measurement
 * Add the following to thread group: 
-	- Http Request sampler: Configure for the webpage server, GET/POST method, port number, 				and REST API endpoint URL.
+	- Http Request sampler: Configure for the webpage server, GET/POST method, port number, and REST API endpoint URL.
 	- HTTP Authorization Manager: Configure webpage server, Username and password for testing.
 	- View results in tree: View results on running the application and jmeter test server.
 
