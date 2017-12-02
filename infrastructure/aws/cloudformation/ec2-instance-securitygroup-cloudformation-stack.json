@@ -643,7 +643,7 @@
 				"HealthCheckPath" : "/",
 				"Name" : "MyTargetGroup",
 				"Port" : 8080,
-				"Protocol" : "HTTPS",
+				"Protocol" : "HTTP",
 				"VpcId" : { "Ref": "VpcId" },
 				"Targets": [
 					{ "Id": {"Ref" : "EC2Instance"}, "Port":  8080 },
