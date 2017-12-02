@@ -589,19 +589,9 @@
 							"GroupId"
 						]
 					}
-				},
-
-                                {
-					"IpProtocol": "tcp",
-					"FromPort": "8080",
-					"ToPort": "8080",
-					"DestinationSecurityGroupId": {
-						"Fn::GetAtt": [
-							"WebServerSecurityGroup",
-							"GroupId"
-						]
-					}
 				}
+
+                               
 				
 				]
    
