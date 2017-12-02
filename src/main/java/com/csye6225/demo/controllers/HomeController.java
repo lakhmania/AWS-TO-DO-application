@@ -64,6 +64,7 @@ public class HomeController {
       jsonObject.addProperty("message", "you are logged in. current time is " + new Date().toString());
       return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
     }
+
   }
 
   @RequestMapping(value = "/user/register", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
