@@ -98,15 +98,16 @@
 	},
 	"Resources": {
 		"EC2Instance": {
-			"Type": "AWS::EC2::Instance",
+           "Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties": {
+                "AssociatePublicIpAddress": "true",
 				"ImageId": {
 					"Ref": "ImageId"
 				},
 				"InstanceType": {
 					"Ref": "InstanceType"
 				},
-				"SecurityGroupIds": [{
+				"SecurityGroups": [{
 					"Fn::GetAtt": [
 						"WebServerSecurityGroup",
 						"GroupId"
@@ -115,22 +116,11 @@
 				"KeyName": {
 					"Ref": "KeyName"
 				},
-				"SubnetId": {
-					"Ref": "SubnetId"
-				},
 				"BlockDeviceMappings": [{
 					"DeviceName": "/dev/sdf",
 					"Ebs": {
 						"VolumeSize": "16",
 						"VolumeType": "gp2"
-					}
-				}],
-				"Tags": [{
-					"Key": {
-						"Ref": "TagKey"
-					},
-					"Value": {
-						"Ref": "TagValue"
 					}
 				}],
 				"UserData": {
@@ -206,224 +196,7 @@
 				}
 			}
 		},
-		"EC2Instance2": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"ImageId": {
-					"Ref": "ImageId"
-				},
-				"InstanceType": {
-					"Ref": "InstanceType"
-				},
-				"SecurityGroupIds": [{
-					"Fn::GetAtt": [
-						"WebServerSecurityGroup",
-						"GroupId"
-					]
-				}],
-				"KeyName": {
-					"Ref": "KeyName"
-				},
-				"SubnetId": {
-					"Ref": "SubnetId"
-				},
-				"BlockDeviceMappings": [{
-					"DeviceName": "/dev/sdf",
-					"Ebs": {
-						"VolumeSize": "16",
-						"VolumeType": "gp2"
-					}
-				}],
-				"Tags": [{
-					"Key": {
-						"Ref": "TagKey"
-					},
-					"Value": {
-						"Ref": "TagValue"
-					}
-				}],
-				"UserData": {
-					"Fn::Base64": {
-						"Fn::Join": [
-							"", [
-								"#!bin/bash\n",
-								"sudo apt-get update\n",
-								"sudo apt install default-jre --yes\n",
-								"java -version\n",
-								"sudo apt-get install tomcat8 --yes\n",
-								"sudo service tomcat8 restart\n",
-								"sudo apt-get update\n",
-								"sudo apt-get install ruby --yes\n",
-								"sudo apt-get install wget --yes\n",
-								"sudo apt-get install python --yes\n",
-								"cd /home/ubuntu\n",
-								"pwd\n",
-								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-								"chmod +x ./install\n",
-								"sudo ./install auto\n",
-								"sudo service codedeploy-agent start\n",
-								"sudo service codedeploy-agent status\n",
-								"echo '#!/bin/sh' >> /usr/share/tomcat8/bin/setenv.sh \n",
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${RDSInstance.Endpoint.Address}:3306/csye6225\"' >> /usr/share/tomcat8/bin/setenv.sh \n"
-								},
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=${DBUser}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
-								},
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=${DBPassword}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
-								},
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=${S3BucketName}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
-								},
-								"chmod +x /usr/share/tomcat8/bin/setenv.sh\n",
-								"chown tomcat8:tomcat8 /usr/share/tomcat8/bin/setenv.sh\n",
-								"chmod 777 -R /tmp\n",
-								"chmod 777 /var/lib/tomcat8 \n",
-								"chmod 777 /var/lib/tomcat8/webapps\n",
-								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'\n",
-								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'\n",
-								"sudo apt-get -y install mysql-server\n",
-								"sudo service mysql start\n",
-								"echo '#!/bin/sh' >> /etc/systemd/system/awslogs.service\n",
-								"echo '[Unit]' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'Description=The CloudWatch Logs agent' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'After=rc-local.service' >> /etc/systemd/system/awslogs.service\n",
-								"echo '' >> /etc/systemd/system/awslogs.service\n",
-								"echo '[Service]' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'Type=simple' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'Restart=always' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'KillMode=process' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'TimeoutSec=infinity' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'PIDFile=/var/awslogs/state/awslogs.pid' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'ExecStart=/var/awslogs/bin/awslogs-agent-launcher.sh --start --background --pidfile $PIDFILE --user awslogs --chuid awslogs &' >> /etc/systemd/system/awslogs.service\n",
-								"echo '' >> /etc/systemd/system/awslogs.service\n",
-								"echo '[Install]' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'WantedBy=multi-user.target' >> /etc/systemd/system/awslogs.service\n",
-								"chmod +x /etc/systemd/system/awslogs.service\n",
-								"echo '' >> /home/ubuntu/awslogs.conf\n",
-								"chmod +x /home/ubuntu/awslogs.conf\n",
-								"sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
-								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n",
-								"sudo rm /home/ubuntu/awslogs.conf\n"
-							]
-						]
-					}
-				},
-				"IamInstanceProfile": {
-					"Ref": "CodeDeployEC2ServiceRoleInstanceProfile"
-				}
-			}
-		},
-		"EC2Instance3": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"ImageId": {
-					"Ref": "ImageId"
-				},
-				"InstanceType": {
-					"Ref": "InstanceType"
-				},
-				"SecurityGroupIds": [{
-					"Fn::GetAtt": [
-						"WebServerSecurityGroup",
-						"GroupId"
-					]
-				}],
-				"KeyName": {
-					"Ref": "KeyName"
-				},
-				"SubnetId": {
-					"Ref": "SubnetId"
-				},
-				"BlockDeviceMappings": [{
-					"DeviceName": "/dev/sdf",
-					"Ebs": {
-						"VolumeSize": "16",
-						"VolumeType": "gp2"
-					}
-				}],
-				"Tags": [{
-					"Key": {
-						"Ref": "TagKey"
-					},
-					"Value": {
-						"Ref": "TagValue"
-					}
-				}],
-				"UserData": {
-					"Fn::Base64": {
-						"Fn::Join": [
-							"", [
-								"#!bin/bash\n",
-								"sudo apt-get update\n",
-								"sudo apt install default-jre --yes\n",
-								"java -version\n",
-								"sudo apt-get install tomcat8 --yes\n",
-								"sudo service tomcat8 restart\n",
-								"sudo apt-get update\n",
-								"sudo apt-get install ruby --yes\n",
-								"sudo apt-get install wget --yes\n",
-								"sudo apt-get install python --yes\n",
-								"cd /home/ubuntu\n",
-								"pwd\n",
-								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-								"chmod +x ./install\n",
-								"sudo ./install auto\n",
-								"sudo service codedeploy-agent start\n",
-								"sudo service codedeploy-agent status\n",
-								"echo '#!/bin/sh' >> /usr/share/tomcat8/bin/setenv.sh \n",
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${RDSInstance.Endpoint.Address}:3306/csye6225\"' >> /usr/share/tomcat8/bin/setenv.sh \n"
-								},
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=${DBUser}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
-								},
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=${DBPassword}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
-								},
-								{
-									"Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=${S3BucketName}\"' >> /usr/share/tomcat8/bin/setenv.sh\n"
-								},
-								"chmod +x /usr/share/tomcat8/bin/setenv.sh\n",
-								"chown tomcat8:tomcat8 /usr/share/tomcat8/bin/setenv.sh\n",
-								"chmod 777 -R /tmp\n",
-								"chmod 777 /var/lib/tomcat8 \n",
-								"chmod 777 /var/lib/tomcat8/webapps\n",
-								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'\n",
-								"sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'\n",
-								"sudo apt-get -y install mysql-server\n",
-								"sudo service mysql start\n",
-								"echo '#!/bin/sh' >> /etc/systemd/system/awslogs.service\n",
-								"echo '[Unit]' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'Description=The CloudWatch Logs agent' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'After=rc-local.service' >> /etc/systemd/system/awslogs.service\n",
-								"echo '' >> /etc/systemd/system/awslogs.service\n",
-								"echo '[Service]' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'Type=simple' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'Restart=always' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'KillMode=process' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'TimeoutSec=infinity' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'PIDFile=/var/awslogs/state/awslogs.pid' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'ExecStart=/var/awslogs/bin/awslogs-agent-launcher.sh --start --background --pidfile $PIDFILE --user awslogs --chuid awslogs &' >> /etc/systemd/system/awslogs.service\n",
-								"echo '' >> /etc/systemd/system/awslogs.service\n",
-								"echo '[Install]' >> /etc/systemd/system/awslogs.service\n",
-								"echo 'WantedBy=multi-user.target' >> /etc/systemd/system/awslogs.service\n",
-								"chmod +x /etc/systemd/system/awslogs.service\n",
-								"echo '' >> /home/ubuntu/awslogs.conf\n",
-								"chmod +x /home/ubuntu/awslogs.conf\n",
-								"sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py\n",
-								"sudo python ./awslogs-agent-setup.py --region us-east-1 --non-interactive --configfile=/home/ubuntu/awslogs.conf\n",
-								"sudo rm /home/ubuntu/awslogs.conf\n"
-							]
-						]
-					}
-				},
-				"IamInstanceProfile": {
-					"Ref": "CodeDeployEC2ServiceRoleInstanceProfile"
-				}
-			}
-		},
+		
 		"WebServerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
@@ -452,6 +225,12 @@
 						"ToPort": "443",
 						"CidrIp": "0.0.0.0/0"
 						
+					},
+					{
+						"IpProtocol": "tcp",
+						"FromPort": "80",
+						"ToPort": "80",
+						"CidrIp": "0.0.0.0/0"
 					}
 					
 
@@ -644,14 +423,40 @@
 				"Name" : "MyTargetGroup",
 				"Port" : 8080,
 				"Protocol" : "HTTP",
-				"VpcId" : { "Ref": "VpcId" },
-				"Targets": [
-					{ "Id": {"Ref" : "EC2Instance"}, "Port":  8080 },
-					{ "Id": {"Ref" : "EC2Instance2"}, "Port": 8080 },
-					{ "Id": {"Ref" : "EC2Instance3"}, "Port": 8080 }
-				]
+				"VpcId" : { "Ref": "VpcId" }
+				
 			}
 		},
+"WebServerGroup" : {
+          "Type" : "AWS::AutoScaling::AutoScalingGroup",
+          "Properties" : {
+             "LaunchConfigurationName" : { "Ref" : "EC2Instance" },
+             "MinSize" : "1",
+             "DesiredCapacity" : "3",
+             "MaxSize" : "3",
+             "TargetGroupARNs": [{
+                         "Ref": "ALBTargetGroup"
+                   }
+               ],
+             "Tags": [{
+              "Key": {
+                "Ref": "TagKey"
+              },
+              "Value": {
+                "Ref": "TagValue"
+              },
+               "PropagateAtLaunch" : "true"
+             }],
+            "VPCZoneIdentifier" :[{
+              "Ref": "SubnetId"
+            },
+              {
+                "Ref": "SubnetId2"
+              }
+            ]
+          },
+		   "DependsOn" : "ALBListener"
+       },
 		"S3Bucket": {
 			"Type": "AWS::S3::Bucket",
 			"Properties": {
