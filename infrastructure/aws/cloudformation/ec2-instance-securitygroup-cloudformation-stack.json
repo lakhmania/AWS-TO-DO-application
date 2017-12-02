@@ -91,19 +91,23 @@
       },
       "TopicName":{  
          "Type":"String"
+      },
+      "CertificateArn1":{  
+         "Type":"String"
       }
    },
    "Resources":{  
       "EC2Instance":{  
-         "Type":"AWS::EC2::Instance",
+         "Type":"AWS::AutoScaling::LaunchConfiguration",
          "Properties":{  
+            "AssociatePublicIpAddress":"true",
             "ImageId":{  
                "Ref":"ImageId"
             },
             "InstanceType":{  
                "Ref":"InstanceType"
             },
-            "SecurityGroupIds":[  
+            "SecurityGroups":[  
                {  
                   "Fn::GetAtt":[  
                      "WebServerSecurityGroup",
@@ -114,25 +118,12 @@
             "KeyName":{  
                "Ref":"KeyName"
             },
-            "SubnetId":{  
-               "Ref":"SubnetId"
-            },
             "BlockDeviceMappings":[  
                {  
                   "DeviceName":"/dev/sdf",
                   "Ebs":{  
                      "VolumeSize":"16",
                      "VolumeType":"gp2"
-                  }
-               }
-            ],
-            "Tags":[  
-               {  
-                  "Key":{  
-                     "Ref":"TagKey"
-                  },
-                  "Value":{  
-                     "Ref":"TagValue"
                   }
                }
             ],
@@ -210,6 +201,42 @@
             }
          }
       },
+      "WebServerGroup":{  
+         "Type":"AWS::AutoScaling::AutoScalingGroup",
+         "Properties":{  
+            "LaunchConfigurationName":{  
+               "Ref":"EC2Instance"
+            },
+            "MinSize":"1",
+            "DesiredCapacity":"3",
+            "MaxSize":"3",
+            "TargetGroupARNs":[  
+               {  
+                  "Ref":"ALBTargetGroup"
+               }
+            ],
+            "Tags":[  
+               {  
+                  "Key":{  
+                     "Ref":"TagKey"
+                  },
+                  "Value":{  
+                     "Ref":"TagValue"
+                  },
+                  "PropagateAtLaunch":"true"
+               }
+            ],
+            "VPCZoneIdentifier":[  
+               {  
+                  "Ref":"SubnetId"
+               },
+               {  
+                  "Ref":"SubnetId2"
+               }
+            ]
+         },
+         "DependsOn":"ALBListener"
+      },
       "WebServerSecurityGroup":{  
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{  
@@ -221,6 +248,12 @@
                "Ref":"VpcId"
             },
             "SecurityGroupIngress":[  
+               {  
+                  "IpProtocol":"tcp",
+                  "FromPort":"8080",
+                  "ToPort":"8080",
+                  "CidrIp":"0.0.0.0/0"
+               },
                {  
                   "IpProtocol":"tcp",
                   "FromPort":"80",
@@ -238,12 +271,37 @@
                   "FromPort":"443",
                   "ToPort":"443",
                   "CidrIp":"0.0.0.0/0"
-               },
+               }
+            ]
+         }
+      },
+      "LoadBalancerSecurityGroup":{  
+         "Type":"AWS::EC2::SecurityGroup",
+         "Properties":{  
+            "GroupName":"ALB_SG",
+            "GroupDescription":"Enable HTTP access via port 80, SSH access via port 22",
+            "VpcId":{  
+               "Ref":"VpcId"
+            },
+            "SecurityGroupIngress":[  
+               {  
+                  "IpProtocol":"tcp",
+                  "FromPort":"443",
+                  "ToPort":"443",
+                  "CidrIp":"0.0.0.0/0"
+               }
+            ],
+            "SecurityGroupEgress":[  
                {  
                   "IpProtocol":"tcp",
                   "FromPort":"8080",
                   "ToPort":"8080",
-                  "CidrIp":"0.0.0.0/0"
+                  "SourceSecurityGroupId":{  
+                     "Fn::GetAtt":[  
+                        "WebServerSecurityGroup",
+                        "GroupId"
+                     ]
+                  }
                }
             ]
          }
@@ -359,6 +417,69 @@
             }
          }
       },
+      "LoadBalancer":{  
+         "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
+         "Properties":{  
+            "Name":"CSYE6225LoadBalancerANNC",
+            "Scheme":"internet-facing",
+            "Subnets":[  
+               {  
+                  "Ref":"SubnetId"
+               },
+               {  
+                  "Ref":"SubnetId2"
+               }
+            ],
+            "SecurityGroups":[  
+               {  
+                  "Ref":"LoadBalancerSecurityGroup"
+               }
+            ],
+            "Type":"application",
+            "IpAddressType":"ipv4"
+         }
+      },
+      "ALBListener":{  
+         "Type":"AWS::ElasticLoadBalancingV2::Listener",
+         "Properties":{  
+            "DefaultActions":[  
+               {  
+                  "Type":"forward",
+                  "TargetGroupArn":{  
+                     "Ref":"ALBTargetGroup"
+                  }
+               }
+            ],
+            "LoadBalancerArn":{  
+               "Ref":"LoadBalancer"
+            },
+            "Port":"443",
+            "Protocol":"HTTPS",
+            "Certificates":[  
+               {  
+                  "CertificateArn":{  
+                     "Ref":"CertificateArn1"
+                  }
+               }
+            ]
+         }
+      },
+      "ALBTargetGroup":{  
+         "Type":"AWS::ElasticLoadBalancingV2::TargetGroup",
+         "Properties":{  
+            "HealthCheckIntervalSeconds":30,
+            "UnhealthyThresholdCount":10,
+            "HealthCheckPort":8080,
+            "HealthCheckPath":"/",
+            "Name":"MyTargetGroup",
+            "TargetType":"instance",
+            "Port":8080,
+            "Protocol":"HTTP",
+            "VpcId":{  
+               "Ref":"VpcId"
+            }
+         }
+      },
       "S3Bucket":{  
          "Type":"AWS::S3::Bucket",
          "Properties":{  
@@ -376,15 +497,20 @@
             "Name":{  
                "Ref":"Name"
             },
-            "ResourceRecords":[  
-               {  
+            "AliasTarget":{  
+               "HostedZoneId":{  
                   "Fn::GetAtt":[  
-                     "EC2Instance",
-                     "PublicIp"
+                     "LoadBalancer",
+                     "CanonicalHostedZoneID"
+                  ]
+               },
+               "DNSName":{  
+                  "Fn::GetAtt":[  
+                     "LoadBalancer",
+                     "DNSName"
                   ]
                }
-            ],
-            "TTL":"60",
+            },
             "Type":"A"
          }
       },
