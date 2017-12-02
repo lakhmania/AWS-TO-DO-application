@@ -239,32 +239,28 @@
 				"SecurityGroupIngress": [
                   {
                     "IpProtocol":"tcp",
-                    "FromPort":"443",
-                    "ToPort":"443",
-					"SourceSecurityGroupId": {
-						  "Fn::GetAtt": [
-							  "LoadBalancerSecurityGroup",
-							  "GroupId"
-						  ]
-					}
+                    "FromPort":"8080",
+                    "ToPort":"8080",
+                    "CidrIp": "0.0.0.0/0"
                   },
                   {
                     "IpProtocol":"tcp",
                     "FromPort":"80",
                     "ToPort":"80",
-					"SourceSecurityGroupId": {
-						  "Fn::GetAtt": [
-							  "LoadBalancerSecurityGroup",
-							  "GroupId"
-						  ]
-					}
+                    "CidrIp": "0.0.0.0/0"
                   },
 				  {
 						"IpProtocol":"tcp",
 						"FromPort":"22",
 						"ToPort":"22",
 						"CidrIp": "0.0.0.0/0"
-				  }
+				  },
+                  {
+                    "IpProtocol":"tcp",
+                    "FromPort":"443",
+                    "ToPort":"443",
+                    "CidrIp":"0.0.0.0/0"
+                  }
                 ]
 			}
 		},
@@ -282,6 +278,19 @@
 						"FromPort":"443",
 						"ToPort":"443",
 						"CidrIp":"0.0.0.0/0"
+					}
+				],
+				"SecurityGroupEgress": [
+					{
+						"IpProtocol":"tcp",
+						"FromPort":"8080",
+						"ToPort":"8080",
+                        "SourceSecurityGroupId": {
+                        "Fn::GetAtt": [
+                          "WebServerSecurityGroup",
+                          "GroupId"
+                        ]
+                      }
 					}
 				]
 			}
@@ -432,7 +441,8 @@
 				"HealthCheckPath" : "/",
 				"Name" : "MyTargetGroup",
                 "TargetType": "instance",
-				"Port" : 80,
+				"Port" : 8080,
+                "HealthCheckPort":8080,
 				"Protocol" : "HTTP",
 				"VpcId" : { "Ref": "VpcId" }
 			}
