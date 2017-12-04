@@ -1,0 +1,10 @@
+resources:
+- name: a-firewall-rule
+  type: compute.v1.firewall
+  properties:
+    sourceRanges: ["0.0.0.0/0"]
+    targetTags: "network-tag"
+    allowed:
+    - IPProtocol: TCP
+      ports: ["80","443","22"]
+
