@@ -1,5 +1,30 @@
 resources:
-- name: csye6225-storage
+- name: a-firewall-rule
+  type: compute.v1.firewall
+  properties:
+    sourceRanges: ["0.0.0.0/0"]
+    allowed:
+    - IPProtocol: TCP
+      ports: ["80","443","22"]
+- name: myinstance
+  type: compute.v1.instance
+  properties:
+    zone: {{ properties['zone'] }}
+    machineType: zones/{{ properties['zone'] }}/machineTypes/{{ properties['machineType'] }}
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      autoDelete: true
+      boot: true
+      initializeParams:
+        diskName: myinstance-disk
+        sourceImage: projects/ubuntu-os-cloud/global/images/family/{{ properties['containerImage'] }}
+    networkInterfaces:
+    - accessConfigs:
+      - name: external-nat
+        type: ONE_TO_ONE_NAT
+      network: global/networks/default
+- name: {{properties['storage']}}
   type: storage.v1.bucket
 
 
