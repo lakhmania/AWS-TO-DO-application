@@ -1,5 +1,5 @@
 resources:
-- name: rds-created-by-deployment-manager
+- name: rds-instance
   type: sqladmin.v1beta4.instance
   properties:
    backendType: SECOND_GEN
@@ -16,5 +16,13 @@ resources:
    kind: sql#user
    name: csyemaster
    password: csyepassword
-   instance: rds-created-by-deployment-manager
+   instance: rds-instance
    project: gcloud-csye6225-cloud
+   host: "%"
+- name: rds-database
+  type: sqladmin.v1beta4.database
+  properties:
+   kind: sql#database
+   name: rds-instance
+   project: gcloud-csye6225-cloud
+   charset: utf8
