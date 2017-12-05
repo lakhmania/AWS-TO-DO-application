@@ -1,0 +1,20 @@
+resources:
+- name: rds-created-by-deployment-manager
+  type: sqladmin.v1beta4.instance
+  properties:
+   backendType: SECOND_GEN
+   connectionName: csye6225-fall2017
+   databaseVersion: MYSQL_5_6
+   gceZone: us-central1
+   instanceType: CLOUD_SQL_INSTANCE
+   kind: sql#instance
+   masterInstanceName: csye6225
+   project: gcloud-csye6225-cloud
+- name: rds-created-user
+  type: sqladmin.v1beta4.user
+  properties:
+   kind: sql#user
+   name: csyemaster
+   password: csyepassword
+   instance: rds-created-by-deployment-manager
+   project: gcloud-csye6225-cloud
