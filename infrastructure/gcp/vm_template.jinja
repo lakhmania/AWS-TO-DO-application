@@ -3,9 +3,22 @@ resources:
   type: compute.v1.firewall
   properties:
     sourceRanges: ["0.0.0.0/0"]
+    targetTags: [{{ properties['tag']}}]
     allowed:
     - IPProtocol: TCP
       ports: ["80","443","22"]
+- name: my-custom-role
+  type: gcp-type/iam-v1:projects.roles
+  properties:
+    parent: projects/{{ env["project"] }}
+    roleId: {{ properties["roleId"] }}
+    role:
+      title: {{ properties["title"] }}
+      description: {{ properties["description"] }}
+      stage: {{ properties["stage"] }}
+      includedPermissions:
+        - bigquery.config.get
+        - bigquery.datasets.get
 - name: myinstance
   type: compute.v1.instance
   properties:
@@ -24,5 +37,7 @@ resources:
       - name: external-nat
         type: ONE_TO_ONE_NAT
       network: global/networks/default
+    tags:
+      items: [{{ properties['tag']}}]
 
 
