@@ -8,30 +8,27 @@ resources:
    gceZone: us-central1
    instanceType: CLOUD_SQL_INSTANCE
    kind: sql#instance
-   masterInstanceName: csye6225-fall2017
    project: {{ env["deployment"] }}
    settings:
-    ipconfiguration:
-     authorizednetworks:[
-      {
-       kind: sql#aclEntry
-       value: 0.0.0.0/0   
-      }
-     ]
+    tier: db-n1-standard-1
+    ipConfiguration:
+     authorizedNetworks:
+      - kind: sql#aclEntry
+        value: 0.0.0.0/0
 - name: rds-user
   type: sqladmin.v1beta4.user
   properties:
    kind: sql#user
    name: csyemaster
    password: csyepassword
-   instance: rds-instance
+   instance: {{ env["deployment"] }}:us-central1:rds-instance
    project: {{ env["deployment"] }}
    host: "%"
 - name: rds-database
   type: sqladmin.v1beta4.database
   properties:
    kind: sql#database
-   instance: rds-instance
+   instance: {{ env["deployment"] }}:us-central1:rds-instance
    project: {{ env["deployment"] }}
    charset: utf8
    name: csye6225
