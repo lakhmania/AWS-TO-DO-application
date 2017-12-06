@@ -6,7 +6,7 @@ resources:
     allowed:
     - IPProtocol: TCP
       ports: ["80","443","22"]
-- name: myinstance
+- name: csye6225-instance
   type: compute.v1.instance
   properties:
     zone: {{ properties['zone'] }}
@@ -26,6 +26,68 @@ resources:
       network: global/networks/default
 - name: {{properties['storage']}}
   type: storage.v1.bucket
+- name: csye6225-instance-group-manager
+  type: compute.v1.instanceGroupManager
+  properties:
+   baseInstanceName: csye6225-instance
+   instanceTemplate: $(ref.csye6225-instance-template.selfLink)
+   targetSize: 1
+   zone: {{ properties['zone'] }}
+- name: csye6225-instance-template
+  type: compute.v1.instanceTemplate
+  properties:
+   description: ''
+   properties:
+     disks:
+     - autoDelete: true
+       boot: true
+       deviceName: boot
+       initializeParams:
+         sourceImage: projects/ubuntu-os-cloud/global/images/family/{{ properties['containerImage'] }}
+       mode: READ_WRITE
+       type: PERSISTENT
+     machineType: {{ properties['machineType'] }}
+     networkInterfaces:
+     - accessConfigs:
+       - name: external-nat
+         type: ONE_TO_ONE_NAT
+       network: global/networks/default
+- name: csye6225-health-check
+  type: compute.v1.httpHealthCheck
+  properties:
+     checkIntervalSec: 5
+     description: ''
+     healthyThreshold: 2
+     host: ''
+     port: 8080
+     requestPath: /_ah/health
+     timeoutSec: 5
+     unhealthyThreshold: 2
+- name: csye6225-bes
+  type: compute.v1.backendService
+  properties:
+     port: {{ properties['port'] }}
+     portName: {{ properties['service'] }}
+     backends:
+     - name: csye6225-primary
+       group: $(ref.csye6225-instance-group-manager.instanceGroup)
+     healthChecks: [ $(ref.csye6225-health-check.selfLink) ]
+- name: csye6225-urlmap
+  type: compute.v1.urlMap
+  properties:
+    defaultService: $(ref.csye6225-bes.selfLink)
+- name: csye6225-targetproxy
+  type: compute.v1.targetHttpProxy
+  properties:
+     urlMap: $(ref.csye6225-urlmap.selfLink)
+- name: csye6225-globalforwarding-rule
+  type: compute.v1.globalForwardingRule
+  properties:
+     IPProtocol: TCP
+     portRange: 8080
+     target: $(ref.csye6225-targetproxy.selfLink)
+
+
 
 
 
