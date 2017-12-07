@@ -1,9 +1,9 @@
 resources:
-- name: rds-instance-10
-  type: sqladmin.v1beta4.instance
+- name: {{ env['deployment'] }}-instance-3
+  type: gcp-types/sqladmin-v1beta4:instances
   properties:
    backendType: SECOND_GEN
-   connectionName: {{ env["project"] }}:us-central1:rds-instance-10
+   connectionName: {{ env["project"] }}:us-central1:i{{ env['deployment'] }}-instance-3
    databaseVersion: MYSQL_5_6
    region: us-central1
    instanceType: CLOUD_SQL_INSTANCE
@@ -16,18 +16,22 @@ resources:
      authorizedNetworks:
       - kind: sql#aclEntry
         value: 0.0.0.0/0
+- name: rds-database
+  type: gcp-types/sqladmin-v1beta4:databases
+  properties:
+   instance: $(ref.{{ env['deployment'] }}-instance-3.name)
+   charset: utf8
+   name: csye6225
 - name: rds-user
-  type: sqladmin.v1beta4.user
+  action: gcp-types/sqladmin-v1beta4:sql.users.insert
+  metadata:
+   runtimePolicy:
+   - CREATE
+   dependsOn:
+   - rds-database
   properties:
    name: csyemaster
    password: csyepassword
-   instance: rds-instance-10
+   instance: $(ref.{{ env['deployment'] }}-instance-3.name)
    project: {{ env["project"] }}
    host: "%"
-- name: rds-database
-  type: sqladmin.v1beta4.database
-  properties:
-   instance: rds-instance-10
-   project: {{ env["project"] }}
-   charset: utf8
-   name: csye6225
