@@ -80,5 +80,33 @@ resources:
     target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
 
+- name: csye6225-bes
+  type: compute.v1.backendService
+  properties:
+     port: {{ properties['port'] }}
+     portName: {{ properties['service'] }}
+     backends:
+     - name: csye6225-primary
+       group: $(ref.csye6225-instance-group-manager.instanceGroup)
+     healthChecks: [ $(ref.csye6225-health-check.selfLink) ]
+
+- name: csye6225-urlmap
+  type: compute.v1.urlMap
+  properties:
+    defaultService: $(ref.csye6225-bes.selfLink)
+
+- name: csye6225-targetproxy
+  type: compute.v1.targetHttpProxy
+  properties:
+     urlMap: $(ref.csye6225-urlmap.selfLink)
+
+- name: csye6225-globalforwarding-rule
+  type: compute.v1.globalForwardingRule
+  properties:
+     IPProtocol: TCP
+     portRange: 8080
+     target: $(ref.csye6225-targetproxy.selfLink)
+
+
 
 
