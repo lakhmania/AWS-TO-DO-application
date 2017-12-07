@@ -86,6 +86,12 @@ resources:
      IPProtocol: TCP
      portRange: 8080
      target: $(ref.csye6225-targetproxy.selfLink)
+- name: csye6225-resourceRecordSet
+  type: dns.v1.resourceRecordSet
+  properties:
+    type: TXT
+    ttl: 60
+    rrdatas: ['csye6225']
 
 
 
