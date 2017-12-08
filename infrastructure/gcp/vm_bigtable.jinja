@@ -1,0 +1,14 @@
+resources:
+- name: {{ env['deployment'] }}-bigtable-instance
+  type: bigtableadmin.v2.instance
+  properties:
+   parent: {{ env['project'] }}
+   displayName: csye6225-nosql-datastore
+   type: PRODUCTION
+- name: csye6225-table
+  type: gcp-types/bigtableadmin-v2:projects.instances.tables
+  properties:
+   parent: $(ref.{{ env['deployment'] }}-bigtable-instance.name)
+   columnFamilies:
+    -string: object(ColumnFamily)
+   
