@@ -2,9 +2,8 @@ resources:
 - name: {{ env['deployment'] }}-bigtable-instance
   type: bigtableadmin.v2.instance
   properties:
-   parent: {{ env['project'] }}
-   displayName: csye6225-nosql-datastore
-   type: PRODUCTION
+   parent: projects/{{ env['project'] }}
+   instanceId: csye6225-bigtable
 - name: csye6225-table
   type: gcp-types/bigtableadmin-v2:projects.instances.tables
   properties:
