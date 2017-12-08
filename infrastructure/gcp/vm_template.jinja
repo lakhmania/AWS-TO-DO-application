@@ -42,7 +42,7 @@ resources:
   properties:
     IPProtocol: TCP
     description: ''
-    portRange: 8080-8080
+    portRange: {{ properties['port'] }}
     region: {{ properties['region'] }}
     target: $(ref.csye6225-target-pool.selfLink)
 
@@ -53,7 +53,7 @@ resources:
     description: ''
     healthyThreshold: 2
     host: ''
-    port: 8080
+    port: {{ properties['port'] }}
     requestPath: /_ah/health
     timeoutSec: 5
     unhealthyThreshold: 2
@@ -97,15 +97,16 @@ resources:
     defaultService: $(ref.csye6225-bes.selfLink)
 
 - name: csye6225-targetproxy
-  type: compute.v1.targetHttpProxy
+  type: compute.v1.targetHttpsProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
+     sslCertificates: [ projects/gcloud-project-csye6225/global/sslCertificates/{{ properties['sslCertificateName'] }}]
 
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
   properties:
      IPProtocol: TCP
-     portRange: 443
+     portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
 
 
