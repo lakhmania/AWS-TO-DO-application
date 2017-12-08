@@ -7,8 +7,12 @@ resources:
     allowed:
     - IPProtocol: TCP
       ports: ["80","443","22"]
+- name: my-pubsub-topic
+  type: pubsub.v1.topic
+  properties:
+    topic: my-pubsub-topic
 - name: my-custom-role
-  type: gcp-type/iam-v1:projects.roles
+  type: gcp-types/iam-v1:projects.roles
   properties:
     parent: projects/{{ env["project"] }}
     roleId: {{ properties["roleId"] }}
@@ -37,7 +41,12 @@ resources:
       - name: external-nat
         type: ONE_TO_ONE_NAT
       network: global/networks/default
+    serviceAccounts:
+      - email: "csye6225@gcloud-assignment6.iam.gserviceaccount.com"
+        scopes:
+          - "https://www.googleapis.com/auth/cloud-platform"
     tags:
       items: [{{ properties['tag']}}]
+
 
 
