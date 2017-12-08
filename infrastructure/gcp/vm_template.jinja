@@ -25,7 +25,77 @@ resources:
         - bigquery.datasets.get
 - name: myinstance
   type: compute.v1.instance
+- name: csye6225-instance-template
+  type: compute.v1.instanceTemplate
   properties:
+    description: ''
+    properties:
+      tags: 
+       items: ["http-server"]
+      disks:
+      - autoDelete: true
+        boot: true
+        deviceName: boot
+        initializeParams:
+          sourceImage: projects/ubuntu-os-cloud/global/images/family/{{ properties['containerImage'] }}
+        mode: READ_WRITE
+        type: PERSISTENT
+      machineType: {{ properties['machineType'] }}
+      networkInterfaces:
+      - accessConfigs:
+        - name: external-nat
+          type: ONE_TO_ONE_NAT
+        network: global/networks/default
+
+- name: csye6225-target-pool
+  type: compute.v1.targetPool
+  properties:
+    description: ''
+    healthChecks:
+    - $(ref.csye6225-health-check.selfLink)
+    region: {{ properties['region'] }}
+
+- name: csye6225-forwarding-rule
+  type: compute.v1.forwardingRule
+  properties:
+    IPProtocol: TCP
+    description: ''
+    portRange: 8080-8080
+    region: {{ properties['region'] }}
+    target: $(ref.csye6225-target-pool.selfLink)
+
+- name: csye6225-health-check
+  type: compute.v1.httpHealthCheck
+  properties:
+    checkIntervalSec: 5
+    description: ''
+    healthyThreshold: 2
+    host: ''
+    port: 8080
+    requestPath: /_ah/health
+    timeoutSec: 5
+    unhealthyThreshold: 2
+
+- name: csye6225-instance-group-manager
+  type: compute.v1.instanceGroupManager
+  properties:
+    baseInstanceName: csye6225-instance
+    instanceTemplate: $(ref.csye6225-instance-template.selfLink)
+    targetPools:
+    - $(ref.csye6225-target-pool.selfLink)
+    targetSize: 3
+    zone: {{ properties['zone'] }}
+
+- name: csye6225-autoscaler
+  type: compute.v1.autoscaler
+  properties:
+    autoscalingPolicy:
+      coolDownPeriodSec: 60
+      cpuUtilization:
+        utilizationTarget: 0.6
+      maxNumReplicas: 3
+      minNumReplicas: 3
+    target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
     machineType: zones/{{ properties['zone'] }}/machineTypes/{{ properties['machineType'] }}
     disks:
@@ -47,6 +117,32 @@ resources:
           - "https://www.googleapis.com/auth/cloud-platform"
     tags:
       items: [{{ properties['tag']}}]
+- name: csye6225-bes
+  type: compute.v1.backendService
+  properties:
+     port: {{ properties['port'] }}
+     portName: {{ properties['service'] }}
+     backends:
+     - name: csye6225-primary
+       group: $(ref.csye6225-instance-group-manager.instanceGroup)
+     healthChecks: [ $(ref.csye6225-health-check.selfLink) ]
+
+- name: csye6225-urlmap
+  type: compute.v1.urlMap
+  properties:
+    defaultService: $(ref.csye6225-bes.selfLink)
+
+- name: csye6225-targetproxy
+  type: compute.v1.targetHttpProxy
+  properties:
+     urlMap: $(ref.csye6225-urlmap.selfLink)
+
+- name: csye6225-globalforwarding-rule
+  type: compute.v1.globalForwardingRule
+  properties:
+     IPProtocol: TCP
+     portRange: 443
+     target: $(ref.csye6225-targetproxy.selfLink)
 
 
 
