@@ -23,8 +23,6 @@ resources:
       includedPermissions:
         - bigquery.config.get
         - bigquery.datasets.get
-- name: myinstance
-  type: compute.v1.instance
 - name: csye6225-instance-template
   type: compute.v1.instanceTemplate
   properties:
@@ -46,6 +44,12 @@ resources:
         - name: external-nat
           type: ONE_TO_ONE_NAT
         network: global/networks/default
+      serviceAccounts:
+        - email: "csye6225@gcloud-assignment6.iam.gserviceaccount.com"
+          scopes:
+            - "https://www.googleapis.com/auth/cloud-platform"
+      tags:
+        items: [{{ properties['tag']}}]
 
 - name: csye6225-target-pool
   type: compute.v1.targetPool
@@ -97,26 +101,6 @@ resources:
       minNumReplicas: 3
     target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
-    machineType: zones/{{ properties['zone'] }}/machineTypes/{{ properties['machineType'] }}
-    disks:
-    - deviceName: boot
-      type: PERSISTENT
-      autoDelete: true
-      boot: true
-      initializeParams:
-        diskName: myinstance-disk
-        sourceImage: projects/ubuntu-os-cloud/global/images/family/{{ properties['containerImage'] }}
-    networkInterfaces:
-    - accessConfigs:
-      - name: external-nat
-        type: ONE_TO_ONE_NAT
-      network: global/networks/default
-    serviceAccounts:
-      - email: "csye6225@gcloud-assignment6.iam.gserviceaccount.com"
-        scopes:
-          - "https://www.googleapis.com/auth/cloud-platform"
-    tags:
-      items: [{{ properties['tag']}}]
 - name: csye6225-bes
   type: compute.v1.backendService
   properties:
