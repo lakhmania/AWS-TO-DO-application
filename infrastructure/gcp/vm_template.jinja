@@ -11,18 +11,6 @@ resources:
   type: pubsub.v1.topic
   properties:
     topic: my-pubsub-topic
-- name: my-custom-role
-  type: gcp-types/iam-v1:projects.roles
-  properties:
-    parent: projects/{{ env["project"] }}
-    roleId: {{ properties["roleId"] }}
-    role:
-      title: {{ properties["title"] }}
-      description: {{ properties["description"] }}
-      stage: {{ properties["stage"] }}
-      includedPermissions:
-        - bigquery.config.get
-        - bigquery.datasets.get
 - name: csye6225-instance-template
   type: compute.v1.instanceTemplate
   properties:
@@ -101,6 +89,7 @@ resources:
       minNumReplicas: 3
     target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
+
 - name: csye6225-bes
   type: compute.v1.backendService
   properties:
@@ -117,9 +106,10 @@ resources:
     defaultService: $(ref.csye6225-bes.selfLink)
 
 - name: csye6225-targetproxy
-  type: compute.v1.targetHttpProxy
+  type: compute.v1.targetHttpsProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
+     sslCertificates: ["https://www.googleapis.com/compute/v1/projects/gcloud-assignment6/global/sslCertificates/csye6225certificate"]
 
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
