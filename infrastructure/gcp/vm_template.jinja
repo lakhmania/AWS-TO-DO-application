@@ -35,7 +35,7 @@ resources:
           type: ONE_TO_ONE_NAT
         network: global/networks/default
       serviceAccounts:
-        - email: "csye6225@gcloud-assignment6.iam.gserviceaccount.com"
+        - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
           scopes:
             - "https://www.googleapis.com/auth/cloud-platform"
       tags:
