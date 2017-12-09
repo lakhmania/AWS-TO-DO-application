@@ -99,6 +99,7 @@ resources:
   type: compute.v1.targetHttpProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
+     sslCertificates: [ projects/gcloud-project-csye6225/global/sslCertificates/{{ properties['sslCertificateName'] }}]
 
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
@@ -106,12 +107,10 @@ resources:
      IPProtocol: TCP
      portRange: 8080
      target: $(ref.csye6225-targetproxy.selfLink)
-- name: csye6225-resourceRecordSet
-  type: dns.v1.resourceRecordSet
-  properties:
-    type: TXT
-    ttl: 60
-    rrdatas: ['csye6225']
+
+- name: csye6225-storage
+  type: storage.v1.bucket
+
 
 
 
