@@ -1,6 +1,20 @@
 resources:
+- name: csye6225-cluster
+  action: gcp-types/bigtableadmin-v2:projects.instances.clusters.create
+  metadata:
+   runtimePolicy:
+   - CREATE
+  properties:
+   name: projects/{{ env['project'] }}/instances/$(ref.{{ env['deployment'] }}-bigtable-instance.name)/clusters/csye6225-cluster
+   location: projects/{{ env['project'] }}/locations/us-central1
+   defaultStorageType: SSD
 - name: {{ env['deployment'] }}-bigtable-instance
-  type: bigtableadmin.v2.instance
+  action: gcp-types:bigtableadmin-v2.instance.create
+  metadata:
+   runtimePolicy:
+   - CREATE
+   dependsOn:
+   - csye6225-cluster
   properties:
    parent: projects/{{ env['project'] }}
    instanceId: csye6225-bigtable
