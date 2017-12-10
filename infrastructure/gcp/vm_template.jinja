@@ -76,7 +76,7 @@ resources:
       cpuUtilization:
         utilizationTarget: 0.6
       maxNumReplicas: 3
-      minNumReplicas: 1
+      minNumReplicas: 3
     target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
 
@@ -110,6 +110,8 @@ resources:
 
 - name: csye6225-storage
   type: storage.v1.bucket
+
+  
 
 
 
