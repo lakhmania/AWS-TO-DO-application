@@ -3,9 +3,15 @@ resources:
   type: compute.v1.firewall
   properties:
     sourceRanges: ["0.0.0.0/0"]
+    targetTags: [{{ properties['tag']}}]
     allowed:
     - IPProtocol: TCP
       ports: ["80","443","22"]
+
+- name: my-pubsub-topic
+  type: pubsub.v1.topic
+  properties:
+    topic: my-pubsub-topic
 
 - name: csye6225-instance-template
   type: compute.v1.instanceTemplate
@@ -28,6 +34,12 @@ resources:
         - name: external-nat
           type: ONE_TO_ONE_NAT
         network: global/networks/default
+      serviceAccounts:
+        - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
+          scopes:
+            - "https://www.googleapis.com/auth/cloud-platform"
+      tags:
+        items: [{{ properties['tag']}}]
 
 - name: csye6225-target-pool
   type: compute.v1.targetPool
@@ -42,7 +54,7 @@ resources:
   properties:
     IPProtocol: TCP
     description: ''
-    portRange: 8080-8080
+    portRange: {{ properties['port'] }}
     region: {{ properties['region'] }}
     target: $(ref.csye6225-target-pool.selfLink)
 
@@ -53,7 +65,7 @@ resources:
     description: ''
     healthyThreshold: 2
     host: ''
-    port: 8080
+    port: {{ properties['port'] }}
     requestPath: /_ah/health
     timeoutSec: 5
     unhealthyThreshold: 2
@@ -96,7 +108,7 @@ resources:
     defaultService: $(ref.csye6225-bes.selfLink)
 
 - name: csye6225-targetproxy
-  type: compute.v1.targetHttpProxy
+  type: compute.v1.targetHttpsProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
      sslCertificates: [ projects/gcloud-project-csye6225/global/sslCertificates/{{ properties['sslCertificateName'] }}]
@@ -105,14 +117,13 @@ resources:
   type: compute.v1.globalForwardingRule
   properties:
      IPProtocol: TCP
-     portRange: 8080
+     portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
 
 - name: csye6225-storage
   type: storage.v1.bucket
 
   
-
 
 
 
