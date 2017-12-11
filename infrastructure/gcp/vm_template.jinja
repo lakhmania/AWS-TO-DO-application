@@ -1,13 +1,4 @@
 resources:
-- name: a-firewall-rule
-  type: compute.v1.firewall
-  properties:
-    sourceRanges: ["0.0.0.0/0"]
-    targetTags: [{{ properties['tag']}}]
-    allowed:
-    - IPProtocol: TCP
-      ports: ["80","443","22"]
-
 - name: my-pubsub-topic
   type: pubsub.v1.topic
   properties:
@@ -16,10 +7,8 @@ resources:
 - name: csye6225-instance-template
   type: compute.v1.instanceTemplate
   properties:
-    description: ''
+    description: 'instance template for vm instances'
     properties:
-      tags: 
-       items: ["http-server"]
       disks:
       - autoDelete: true
         boot: true
@@ -30,53 +19,48 @@ resources:
         type: PERSISTENT
       machineType: {{ properties['machineType'] }}
       networkInterfaces:
-      - accessConfigs:
-        - name: external-nat
-          type: ONE_TO_ONE_NAT
-        network: global/networks/default
+      - network: global/networks/default
+        accessConfig: 
+	  natIP: undefined
       serviceAccounts:
-        - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
-          scopes:
-            - "https://www.googleapis.com/auth/cloud-platform"
+      - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
+        scopes:
+         - "https://www.googleapis.com/auth/cloud-platform"
       tags:
-        items: [{{ properties['tag']}}]
-
-- name: csye6225-target-pool
-  type: compute.v1.targetPool
-  properties:
-    description: ''
-    healthChecks:
-    - $(ref.csye6225-health-check.selfLink)
-    region: {{ properties['region'] }}
-
-- name: csye6225-forwarding-rule
-  type: compute.v1.forwardingRule
-  properties:
-    IPProtocol: TCP
-    description: ''
-    portRange: {{ properties['port'] }}
-    region: {{ properties['region'] }}
-    target: $(ref.csye6225-target-pool.selfLink)
+        items: ["http-server"] 
+      metadata:
+        items: 
+        - key: script
+          value: 
+            #!/bin/bash
+            sudo apt-get update
+            sudo apt-get install openjdk-8-jdk -y
+            sudo apt-get install tomcat8 -y
+            sudo service tomcat8 start       
 
 - name: csye6225-health-check
   type: compute.v1.httpHealthCheck
   properties:
-    checkIntervalSec: 5
-    description: ''
+    checkIntervalSec: 300
+    description: 'healthcheck resource'
+    host: 'csye6225-fall2017-lalwanin.me'
     healthyThreshold: 2
-    host: ''
     port: {{ properties['port'] }}
-    requestPath: /_ah/health
-    timeoutSec: 5
-    unhealthyThreshold: 2
+    requestPath: /healthz
+    timeoutSec: 300
+    unhealthyThreshold: 3
 
 - name: csye6225-instance-group-manager
   type: compute.v1.instanceGroupManager
   properties:
-    baseInstanceName: csye6225-instance
     instanceTemplate: $(ref.csye6225-instance-template.selfLink)
-    targetPools:
-    - $(ref.csye6225-target-pool.selfLink)
+    namedPorts:
+      - name: "{{ properties['service'] }}"
+        port: {{ properties['port'] }}
+    autoHealingPolicies:
+      - healthCheck: $(ref.csye6225-health-check.selfLink)
+        initialDelaySec: 300
+
     targetSize: 3
     zone: {{ properties['zone'] }}
 
@@ -87,7 +71,7 @@ resources:
       coolDownPeriodSec: 60
       cpuUtilization:
         utilizationTarget: 0.6
-      maxNumReplicas: 3
+      maxNumReplicas: 5
       minNumReplicas: 3
     target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
@@ -111,14 +95,25 @@ resources:
   type: compute.v1.targetHttpsProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
-     sslCertificates: [ projects/gcloud-project-csye6225/global/sslCertificates/{{ properties['sslCertificateName'] }}]
+     sslCertificates: [ projects/{{ env["project"] }}/global/sslCertificates/{{ properties['sslCertificateName'] }}]
 
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
   properties:
-     IPProtocol: TCP
      portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
+
+- name: csye6225-managed-zone
+  type: dns.v1.managedZone
+  properties:
+    dnsName: csye6225-fall2017-lalwanin.me.
+    description: A-zone
+    additions:
+      -resourceRecordSets:
+          name: csye6225-resourceRecordSet
+          type: TXT
+          ttl: 60
+  
 
 
 
