@@ -6,7 +6,7 @@ resources:
     targetTags: [{{ properties['tag']}}]
     allowed:
     - IPProtocol: TCP
-      ports: ["80","443","22"]
+      ports: ["8080","80","443","22"]
 
 - name: my-pubsub-topic
   type: pubsub.v1.topic
@@ -41,22 +41,6 @@ resources:
       tags:
         items: [{{ properties['tag']}}]
 
-- name: csye6225-target-pool
-  type: compute.v1.targetPool
-  properties:
-    description: ''
-    healthChecks:
-    - $(ref.csye6225-health-check.selfLink)
-    region: {{ properties['region'] }}
-
-- name: csye6225-forwarding-rule
-  type: compute.v1.forwardingRule
-  properties:
-    IPProtocol: TCP
-    description: ''
-    portRange: {{ properties['port'] }}
-    region: {{ properties['region'] }}
-    target: $(ref.csye6225-target-pool.selfLink)
 
 - name: csye6225-health-check
   type: compute.v1.httpHealthCheck
@@ -75,8 +59,6 @@ resources:
   properties:
     baseInstanceName: csye6225-instance
     instanceTemplate: $(ref.csye6225-instance-template.selfLink)
-    targetPools:
-    - $(ref.csye6225-target-pool.selfLink)
     targetSize: 3
     zone: {{ properties['zone'] }}
 
@@ -111,7 +93,7 @@ resources:
   type: compute.v1.targetHttpsProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
-     sslCertificates: [ projects/gcloud-project-csye6225/global/sslCertificates/{{ properties['sslCertificateName'] }}]
+     sslCertificates: [ projects/gcloud-csye6225/global/sslCertificates/{{ properties['sslCertificateName'] }}]
 
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
@@ -122,6 +104,18 @@ resources:
 
 - name: csye6225-storage
   type: storage.v1.bucket
+
+- name: test2
+  type: dns.v1.managedZone
+  properties:
+     dnsName: csye6225-fall2017-merchantn.me.
+     description: test
+     resourceRecordSets:
+     - name: test
+       type: TXT
+       rrdatas: 
+       - csye6225
+
 
   
 
