@@ -5,4 +5,4 @@ gcloud beta bigtable instances create csye6225-instance --cluster=csye6225-clust
 echo -e "instance = csye6225-instance" > ~/.cbtrc
 cbt createtable csye6225-table 10,20
 cbt createfamily csye6225-table cf1
-cbt -project gcloud-csye6225-cloud -instance csye6225-instance setgcpolicy csye6225-table cf1 maxage=0.33dh
+cbt setgcpolicy csye6225-table cf1 maxage=1200s

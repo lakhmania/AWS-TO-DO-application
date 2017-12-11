@@ -1,11 +1,11 @@
 resources:
-- name: {{ env['deployment'] }}-instance-3
+- name: {{ env['deployment'] }}-instance-4
   type: gcp-types/sqladmin-v1beta4:instances
   properties:
    backendType: SECOND_GEN
-   connectionName: {{ env["project"] }}:us-central1:i{{ env['deployment'] }}-instance-3
+   connectionName: {{ env["project"] }}:us-central1:i{{ env['deployment'] }}-instance-4
    databaseVersion: MYSQL_5_6
-   region: us-central1
+   region: us-east4
    instanceType: CLOUD_SQL_INSTANCE
    kind: sql#instance
    serviceAccountEmailAddress: csye-474@gcloud-csye6225-cloud.iam.gserviceaccount.com
@@ -19,7 +19,7 @@ resources:
 - name: rds-database
   type: gcp-types/sqladmin-v1beta4:databases
   properties:
-   instance: $(ref.{{ env['deployment'] }}-instance-3.name)
+   instance: $(ref.{{ env['deployment'] }}-instance-4.name)
    charset: utf8
    name: csye6225
 - name: rds-user
@@ -32,6 +32,6 @@ resources:
   properties:
    name: csyemaster
    password: csyepassword
-   instance: $(ref.{{ env['deployment'] }}-instance-3.name)
+   instance: $(ref.{{ env['deployment'] }}-instance-4.name)
    project: {{ env["project"] }}
    host: "%"
