@@ -1,9 +1,9 @@
 resources:
-- name: {{ env['deployment'] }}-instance-5
+- name: {{ env['deployment'] }}-$(ref.{{ env['instancename'] }}
   type: gcp-types/sqladmin-v1beta4:instances
   properties:
    backendType: SECOND_GEN
-   connectionName: {{ env["project"] }}:us-central1:i{{ env['deployment'] }}-instance-5
+   connectionName: {{ env["project"] }}:us-central1:i{{ env['deployment'] }}-$(ref.{{ env['instancename'] }}
    databaseVersion: MYSQL_5_6
    region: us-east4
    instanceType: CLOUD_SQL_INSTANCE
@@ -19,7 +19,7 @@ resources:
 - name: rds-database
   type: gcp-types/sqladmin-v1beta4:databases
   properties:
-   instance: $(ref.{{ env['deployment'] }}-instance-5.name)
+   instance: $(ref.{{ env['deployment'] }}-$(ref.{{ env['instancename'] }}.name)
    charset: utf8
    name: csye6225
 - name: rds-user
@@ -32,7 +32,7 @@ resources:
   properties:
    name: csyemaster
    password: csyepassword
-   instance: $(ref.{{ env['deployment'] }}-instance-5.name)
+   instance: $(ref.{{ env['deployment'] }}-$(ref.{{ env['instancename'] }}).name)
    project: {{ env["project"] }}
    host: "%"
 - name: my-pubsub-topic
