@@ -3,7 +3,7 @@ resources:
   type: gcp-types/sqladmin-v1beta4:instances
   properties:
    backendType: SECOND_GEN
-   connectionName: {{ env["project"] }}:us-central1:i{{ env['deployment'] }}-{{ properties['instancename'] }}
+   connectionName: {{ env["project"] }}:us-central1:{{ env['deployment'] }}-{{ properties['instancename'] }}
    databaseVersion: MYSQL_5_6
    region: us-east4
    instanceType: CLOUD_SQL_INSTANCE
@@ -39,6 +39,7 @@ resources:
   type: pubsub.v1.topic
   properties:
     topic: my-pubsub-topic
+
 - name: csye6225-instance-template
   type: compute.v1.instanceTemplate
   properties:
@@ -55,23 +56,24 @@ resources:
       machineType: {{ properties['machineType'] }}
       networkInterfaces:
       - network: global/networks/default
-        accessConfig: 
-	  natIP: undefined
+        accessConfig:
+	     natIP: undefined
       serviceAccounts:
       - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
         scopes:
          - "https://www.googleapis.com/auth/cloud-platform"
       tags:
-        items: ["http-server"] 
+        items: ["http-server"]
       metadata:
-        items: 
+        items:
         - key: script
-          value: 
+          value:
             #!/bin/bash
             sudo apt-get update
             sudo apt-get install openjdk-8-jdk -y
             sudo apt-get install tomcat8 -y
             sudo service tomcat8 start
+
 - name: csye6225-health-check
   type: compute.v1.httpHealthCheck
   properties:
@@ -83,6 +85,7 @@ resources:
     requestPath: /healthz
     timeoutSec: 300
     unhealthyThreshold: 3
+
 - name: csye6225-instance-group-manager
   type: compute.v1.instanceGroupManager
   properties:
@@ -93,8 +96,10 @@ resources:
     autoHealingPolicies:
       - healthCheck: $(ref.csye6225-health-check.selfLink)
         initialDelaySec: 300
+
     targetSize: 3
     zone: {{ properties['zone'] }}
+
 - name: csye6225-autoscaler
   type: compute.v1.autoscaler
   properties:
@@ -106,6 +111,7 @@ resources:
       minNumReplicas: 3
     target: $(ref.csye6225-instance-group-manager.selfLink)
     zone: {{ properties['zone'] }}
+
 - name: csye6225-bes
   type: compute.v1.backendService
   properties:
@@ -115,27 +121,31 @@ resources:
      - name: csye6225-primary
        group: $(ref.csye6225-instance-group-manager.instanceGroup)
      healthChecks: [ $(ref.csye6225-health-check.selfLink) ]
+
 - name: csye6225-urlmap
   type: compute.v1.urlMap
   properties:
     defaultService: $(ref.csye6225-bes.selfLink)
+
 - name: csye6225-targetproxy
   type: compute.v1.targetHttpsProxy
   properties:
      urlMap: $(ref.csye6225-urlmap.selfLink)
      sslCertificates: [ projects/{{ env["project"] }}/global/sslCertificates/{{ properties['sslCertificateName'] }}]
+
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
   properties:
      portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
+
 - name: csye6225-managed-zone
   type: dns.v1.managedZone
   properties:
     dnsName: csye6225-fall2017-lalwanin.me.
     description: A-zone
     additions:
-     -resourceRecordSets:
-       name: csye6225-resourceRecordSet
-       type: TXT
+      -resourceRecordSets:
+          name: csye6225-resourceRecordSet
+          type: TXT
           ttl: 60
