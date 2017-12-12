@@ -37,6 +37,14 @@ resources:
    instance: $(ref.{{ env['deployment'] }}-{{ properties['instancename'] }}.name)
    project: {{ env["project"] }}
    host: "%"
+- name: a-firewall-rule
+  type: compute.v1.firewall
+  properties:
+    sourceRanges: ["0.0.0.0/0"]
+    targetTags: [{{ properties['tag']}}]
+    allowed:
+    - IPProtocol: TCP
+      ports: ["8080","80","443","22"]
 - name: my-pubsub-topic
   type: pubsub.v1.topic
   properties:
@@ -93,13 +101,13 @@ resources:
   type: compute.v1.instanceGroupManager
   properties:
     instanceTemplate: $(ref.csye6225-instance-template.selfLink)
+
     namedPorts:
       - name: "{{ properties['service'] }}"
         port: {{ properties['port'] }}
     autoHealingPolicies:
       - healthCheck: $(ref.csye6225-health-check.selfLink)
         initialDelaySec: 300
-
     targetSize: 3
     zone: {{ properties['zone'] }}
 
@@ -136,11 +144,15 @@ resources:
      urlMap: $(ref.csye6225-urlmap.selfLink)
      sslCertificates: [ projects/{{ env["project"] }}/global/sslCertificates/{{ properties['sslCertificateName'] }}]
 
+
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
   properties:
      portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
+
+- name: csye6225-bucket
+  type: storage.v1.bucket
 
 - name: csye6225-managed-zone
   type: dns.v1.managedZone
@@ -149,6 +161,7 @@ resources:
     description: A-zone
     additions:
       -resourceRecordSets:
-          name: csye6225-resourceRecordSet
-          type: TXT
-          ttl: 60
+        name: csye6225-resourceRecordSet
+        type: TXT
+        ttl: 60
+
