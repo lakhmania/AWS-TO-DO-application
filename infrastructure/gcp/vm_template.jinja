@@ -29,8 +29,6 @@ resources:
       machineType: {{ properties['machineType'] }}
       networkInterfaces:
       - network: global/networks/default
-        accessConfig: 
-	  natIP: undefined
       serviceAccounts:
       - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
         scopes:
