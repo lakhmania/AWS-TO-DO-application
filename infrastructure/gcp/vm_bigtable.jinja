@@ -1,0 +1,21 @@
+resources:
+- name: {{ env['deployment'] }}-bigtable-instance
+  action: gcp-types/bigtableadmin-v2:bigtableadmin.projects.instances.create
+  metadata:
+   runtimePolicy:
+   - CREATE
+  properties:
+   parent: projects/{{ env['project'] }}
+   instanceId: csye6225-bigtable
+   clusters:
+     name: csye6225-cluster
+     properties:
+      location: projects/{{ env['project'] }}/locations/us-central1-b
+      defaultStorageType: SSD
+      serveNodes: 3
+- name: csye6225-table
+  type: gcp-types/bigtableadmin-v2:projects.instances.tables
+  properties:
+   parent: $(ref.{{ env['deployment'] }}-bigtable-instance.name)
+   columnFamilies:
+    -string: object(ColumnFamily)
