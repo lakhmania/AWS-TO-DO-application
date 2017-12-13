@@ -37,11 +37,11 @@ resources:
    instance: $(ref.{{ env['deployment'] }}-{{ properties['instancename'] }}.name)
    project: {{ env["project"] }}
    host: "%"
+
 - name: a-firewall-rule
   type: compute.v1.firewall
   properties:
     sourceRanges: ["0.0.0.0/0"]
-    targetTags: [{{ properties['tag']}}]
     allowed:
     - IPProtocol: TCP
       ports: ["8080","80","443","22"]
@@ -144,7 +144,6 @@ resources:
      urlMap: $(ref.csye6225-urlmap.selfLink)
      sslCertificates: [ projects/{{ env["project"] }}/global/sslCertificates/{{ properties['sslCertificateName'] }}]
 
-
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
   properties:
@@ -164,4 +163,3 @@ resources:
         name: csye6225-resourceRecordSet
         type: TXT
         ttl: 60
-

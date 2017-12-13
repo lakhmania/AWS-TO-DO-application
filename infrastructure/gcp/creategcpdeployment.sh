@@ -9,3 +9,9 @@ echo -e "instance = csye6225-instance" > ~/.cbtrc
 cbt createtable csye6225-table 10,20
 cbt createfamily csye6225-table cf1
 cbt setgcpolicy csye6225-table cf1 maxage=1200s
+
+export ip=$(gcloud compute forwarding-rules describe csye6225-globalforwarding-rule --global | grep IPAddress)
+export ip=$(cut -d ":" -f 2 <<< "$ip")
+gcloud dns record-sets transaction start -z=csye6225-managed-zone
+gcloud dns record-sets transaction add -z=$2 --name=$2 --type=A --ttl=60 $ip
+gcloud dns record-sets transaction execute -z=csye6225-managed-zone
