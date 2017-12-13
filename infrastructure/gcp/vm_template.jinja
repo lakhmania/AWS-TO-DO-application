@@ -18,12 +18,14 @@ resources:
      authorizedNetworks:
       - kind: sql#aclEntry
         value: 0.0.0.0/0
+
 - name: rds-database
   type: gcp-types/sqladmin-v1beta4:databases
   properties:
    instance: $(ref.{{ env['deployment'] }}-{{ properties['instancename'] }}.name)
    charset: utf8
    name: csye6225
+
 - name: rds-user
   action: gcp-types/sqladmin-v1beta4:sql.users.insert
   metadata:
@@ -41,10 +43,11 @@ resources:
 - name: a-firewall-rule
   type: compute.v1.firewall
   properties:
-    sourceRanges: ["0.0.0.0/0"]
+    sourceRanges: [0.0.0.0/0]
     allowed:
     - IPProtocol: TCP
-      ports: ["8080","80","443","22"]
+      ports: [8080,80,443,22]
+
 - name: my-pubsub-topic
   type: pubsub.v1.topic
   properties:
@@ -77,8 +80,8 @@ resources:
         items: ["http-server"]
       metadata:
         items:
-        - key: script
-          value:
+        - key: startup-script
+          value: |
             #!/bin/bash
             sudo apt-get update
             sudo apt-get install openjdk-8-jdk -y
@@ -88,28 +91,19 @@ resources:
 - name: csye6225-health-check
   type: compute.v1.httpHealthCheck
   properties:
-    checkIntervalSec: 300
     description: 'healthcheck resource'
-    host: 'csye6225-fall2017-lalwanin.me'
-    healthyThreshold: 2
-    port: {{ properties['port'] }}
-    requestPath: /healthz
-    timeoutSec: 300
-    unhealthyThreshold: 3
+    port: {{ properties['appport'] }}
 
 - name: csye6225-instance-group-manager
   type: compute.v1.instanceGroupManager
   properties:
     instanceTemplate: $(ref.csye6225-instance-template.selfLink)
-
-    namedPorts:
-      - name: "{{ properties['service'] }}"
-        port: {{ properties['port'] }}
-    autoHealingPolicies:
-      - healthCheck: $(ref.csye6225-health-check.selfLink)
-        initialDelaySec: 300
     targetSize: 3
     zone: {{ properties['zone'] }}
+    baseInstanceName: {{ env["name"] }}-instance
+    namedPorts:
+    - name: "{{ properties['service'] }}"
+      port: {{ properties['appport'] }}
 
 - name: csye6225-autoscaler
   type: compute.v1.autoscaler
@@ -126,7 +120,7 @@ resources:
 - name: csye6225-bes
   type: compute.v1.backendService
   properties:
-     port: {{ properties['port'] }}
+     port: {{ properties['appport'] }}
      portName: {{ properties['service'] }}
      backends:
      - name: csye6225-primary
@@ -156,7 +150,7 @@ resources:
 - name: csye6225-managed-zone
   type: dns.v1.managedZone
   properties:
-    dnsName: csye6225-fall2017-lalwanin.me.
+    dnsName: csye6225-fall2017-lakhmania.me.
     description: A-zone
     additions:
       -resourceRecordSets:
