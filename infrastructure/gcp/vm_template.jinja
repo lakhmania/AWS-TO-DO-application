@@ -1,19 +1,6 @@
-
 {% set COMPUTE_URL_BASE = 'https://www.googleapis.com/compute/v1/' %}
 
 resources:
-<<<<<<< HEAD
-- name: a-firewall-rule
-  type: compute.v1.firewall
-  properties:
-    sourceRanges: ["0.0.0.0/0"]
-    targetTags: [{{ properties['tag']}}]
-    allowed:
-    - IPProtocol: TCP
-      ports: ["8080","80","443","22"]
-
-=======
->>>>>>> 836014150774af2981f897ac1722ebc51583edeb
 - name: {{ env['deployment'] }}-{{ properties['instancename'] }}
   type: gcp-types/sqladmin-v1beta4:instances
   properties:
@@ -53,8 +40,6 @@ resources:
    project: {{ env["project"] }}
    host: "%"
 
-<<<<<<< HEAD
-=======
 - name: a-firewall-rule
   type: compute.v1.firewall
   properties:
@@ -63,7 +48,6 @@ resources:
     - IPProtocol: TCP
       ports: [8080,80,443,22]
 
->>>>>>> 836014150774af2981f897ac1722ebc51583edeb
 - name: my-pubsub-topic
   type: pubsub.v1.topic
   properties:
@@ -87,11 +71,7 @@ resources:
       - accessConfigs:
         - name: external-nat
           type: ONE_TO_ONE_NAT
-<<<<<<< HEAD
-      network: {{ COMPUTE_URL_BASE }}projects/{{ env['project'] }}/global/networks/default
-=======
         network: {{ COMPUTE_URL_BASE }}projects/{{ env['project'] }}/global/networks/default
->>>>>>> 836014150774af2981f897ac1722ebc51583edeb
       serviceAccounts:
       - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
         scopes:
@@ -100,16 +80,6 @@ resources:
         items: ["http-server"]
       metadata:
         items:
-<<<<<<< HEAD
-        - key: script
-          value:
-            #!bin/bash
-            sudo apt-get update\n",
-            sudo apt install default-jre --yes\n",
-            java -version\n",
-            sudo apt-get install tomcat8 --yes\n",
-            sudo service tomcat8 restart\n"
-=======
         - key: startup-script
           value: |
             #!/bin/bash
@@ -117,22 +87,12 @@ resources:
             sudo apt-get install openjdk-8-jdk -y
             sudo apt-get install tomcat8 -y
             sudo service tomcat8 start
->>>>>>> 836014150774af2981f897ac1722ebc51583edeb
 
 - name: csye6225-health-check
   type: compute.v1.httpHealthCheck
   properties:
     description: 'healthcheck resource'
-<<<<<<< HEAD
-    host: {{ properties['dnsName'] }}
-    healthyThreshold: 2
-    port: {{ properties['port'] }}
-    requestPath: /healthz
-    timeoutSec: 300
-    unhealthyThreshold: 3
-=======
     port: {{ properties['appport'] }}
->>>>>>> 836014150774af2981f897ac1722ebc51583edeb
 
 - name: csye6225-instance-group-manager
   type: compute.v1.instanceGroupManager
@@ -194,13 +154,6 @@ resources:
     description: A-zone
     additions:
       -resourceRecordSets:
-<<<<<<< HEAD
-          name: csye6225-resourceRecordSet
-          type: TXT
-          ttl: 60
-
-=======
         name: csye6225-resourceRecordSet
         type: TXT
         ttl: 60
->>>>>>> 836014150774af2981f897ac1722ebc51583edeb
