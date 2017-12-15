@@ -144,13 +144,13 @@ resources:
      portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
 
-- name: csye6225-bucket
+- name: {{ properties['bucket'] }}
   type: storage.v1.bucket
 
 - name: csye6225-managed-zone
   type: dns.v1.managedZone
   properties:
-    dnsName: csye6225-fall2017-lakhmania.me.
+    dnsName: {{ properties['dnsname'] }}
     description: A-zone
     additions:
       -resourceRecordSets:
