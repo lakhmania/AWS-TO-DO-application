@@ -11,6 +11,43 @@ resources:
     - IPProtocol: TCP
       ports: ["8080","80","443","22"]
 
+- name: {{ env['deployment'] }}-{{ properties['instancename'] }}
+  type: gcp-types/sqladmin-v1beta4:instances
+  properties:
+   backendType: SECOND_GEN
+   connectionName: {{ env["project"] }}:us-central1:{{ env['deployment'] }}-{{ properties['instancename'] }}
+   databaseVersion: MYSQL_5_6
+   region: us-east4
+   instanceType: CLOUD_SQL_INSTANCE
+   kind: sql#instance
+   serviceAccountEmailAddress: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
+   project: {{ env["project"] }}
+   settings:
+    tier: db-n1-standard-1
+    ipConfiguration:
+     authorizedNetworks:
+      - kind: sql#aclEntry
+        value: 0.0.0.0/0
+- name: rds-database
+  type: gcp-types/sqladmin-v1beta4:databases
+  properties:
+   instance: $(ref.{{ env['deployment'] }}-{{ properties['instancename'] }}.name)
+   charset: utf8
+   name: csye6225
+- name: rds-user
+  action: gcp-types/sqladmin-v1beta4:sql.users.insert
+  metadata:
+   runtimePolicy:
+   - CREATE
+   dependsOn:
+   - rds-database
+  properties:
+   name: csyemaster
+   password: csyepassword
+   instance: $(ref.{{ env['deployment'] }}-{{ properties['instancename'] }}.name)
+   project: {{ env["project"] }}
+   host: "%"
+
 - name: my-pubsub-topic
   type: pubsub.v1.topic
   properties:
@@ -26,37 +63,38 @@ resources:
         boot: true
         deviceName: boot
         initializeParams:
-          sourceImage: projects/ubuntu-os-cloud/global/images/family/{{ properties['containerImage'] }}
+          sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/{{ properties['containerImage'] }}
         mode: READ_WRITE
         type: PERSISTENT
       machineType: {{ properties['machineType'] }}
       networkInterfaces:
-       - accessConfig:
-          - name: external-nat
-            type: ONE_TO_ONE_NAT
-         network: {{ COMPUTE_URL_BASE }}projects/{{ env['project'] }}/global/networks/default
+      - accessConfigs:
+        - name: external-nat
+          type: ONE_TO_ONE_NAT
+      network: {{ COMPUTE_URL_BASE }}projects/{{ env['project'] }}/global/networks/default
       serviceAccounts:
       - email: csye6225@{{ env["project"] }}.iam.gserviceaccount.com
         scopes:
          - "https://www.googleapis.com/auth/cloud-platform"
       tags:
-        items: ["http-server"] 
+        items: ["http-server"]
       metadata:
-        items: 
+        items:
         - key: script
-          value: 
-            #!/bin/bash
-            sudo apt-get update
-            sudo apt-get install openjdk-8-jdk -y
-            sudo apt-get install tomcat8 -y
-            sudo service tomcat8 start       
+          value:
+            #!bin/bash
+            sudo apt-get update\n",
+            sudo apt install default-jre --yes\n",
+            java -version\n",
+            sudo apt-get install tomcat8 --yes\n",
+            sudo service tomcat8 restart\n"
 
 - name: csye6225-health-check
   type: compute.v1.httpHealthCheck
   properties:
     checkIntervalSec: 300
     description: 'healthcheck resource'
-    host: 'csye6225-fall2017-lalwanin.me'
+    host: {{ properties['dnsName'] }}
     healthyThreshold: 2
     port: {{ properties['port'] }}
     requestPath: /healthz
@@ -76,6 +114,7 @@ resources:
         initialDelaySec: 300
     targetSize: 3
     zone: {{ properties['zone'] }}
+    baseInstanceName: {{ env["name"] }}-instance
 
 - name: csye6225-autoscaler
   type: compute.v1.autoscaler
@@ -114,6 +153,7 @@ resources:
 - name: csye6225-globalforwarding-rule
   type: compute.v1.globalForwardingRule
   properties:
+     IPProtocol: TCP
      portRange: {{ properties['httpsport'] }}
      target: $(ref.csye6225-targetproxy.selfLink)
 
@@ -123,12 +163,11 @@ resources:
 - name: csye6225-managed-zone
   type: dns.v1.managedZone
   properties:
-    dnsName: csye6225-fall2017-lalwanin.me.
+    dnsName: {{ properties['dnsName'] }} 
     description: A-zone
     additions:
       -resourceRecordSets:
           name: csye6225-resourceRecordSet
           type: TXT
           ttl: 60
-
 
