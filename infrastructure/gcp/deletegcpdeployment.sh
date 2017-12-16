@@ -3,7 +3,6 @@ export NAME=${DNS_NAME%????}
 
 gsutil rm gs://storage-$NAME/*
 
-
 gcloud deployment-manager deployments delete my-igm --async --delete-policy=delete
 
 cbt deletetable csye6225-table
