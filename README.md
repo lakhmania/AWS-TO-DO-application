@@ -29,6 +29,6 @@
 
 
 #Link to Travis-CI build
-* https://travis-ci.com/LalwaniN/csye6225-fall2017
+* https://travis-ci.com/lakhmania/csye6225-fall2017
 
 
